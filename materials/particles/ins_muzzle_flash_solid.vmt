@@ -1,0 +1,6 @@
+SpriteCard
+{
+$basetexture "particles/ins_muzzle_flash_solid"
+$additive 1
+$depthblend 0
+}

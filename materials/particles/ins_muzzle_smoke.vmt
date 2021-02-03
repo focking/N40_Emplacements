@@ -1,0 +1,5 @@
+SpriteCard
+{
+$basetexture "particles/ins_muzzle_smoke"
+$depthblend 1
+}

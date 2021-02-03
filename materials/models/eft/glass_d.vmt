@@ -1,0 +1,36 @@
+"VertexlitGeneric"
+{
+	"$basetexture" "models\eft\glass_d"
+	"$color2" "[0.0 0.0 0.0]"
+	"$blendTintByBaseAlpha"	"1"
+	//"$additive" "1"
+	//$translucent 0
+	//$ambientocclusion 0
+	//$no_draw 0
+	//"$selfillum" "1"
+	//"$selfillummaskscale" "15"
+	//"$selfillummask" "models/auditor/codbo3/zom/dempsey_primis"
+
+	$nocull 0
+	$normalmapalphaenvmapmask 1 	
+
+	"$envmap" "env_cubemap"					
+	"$envmaptint" "[0.04 0.04 0.04]"				
+
+	//ReflectionsDir
+
+	"$phong" "1"						
+	"$phongboost"	"1" 		
+	//"$phongexponent" "2"	
+		
+	//"$phongwarptexture"		"models\eft\shared\phongwarp2"		
+	$lightwarptexture "models\eft\shared\lightwarp_soft"
+	
+	"$phongfresnelranges"	"[0.75 4.75 5.75]"		
+	//"$phongtint" 			"[1 1 1.1]"			
+	"$PhongAlbedoTint" "1"
+	"$rimlight" "1"
+	"$rimmask" "1"
+	"$rimlightboost" "1"
+}
+

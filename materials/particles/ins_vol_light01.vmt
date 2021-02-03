@@ -1,0 +1,8 @@
+UnlitGeneric
+{
+	$basetexture "particles/ins_vol_light01"
+	"$vertexcolor" "1"
+	"$vertexalpha" "1"
+	"$translucent" "1"
+	"$additive" 1	
+}

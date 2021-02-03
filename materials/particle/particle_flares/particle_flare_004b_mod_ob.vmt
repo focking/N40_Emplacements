@@ -1,0 +1,13 @@
+spritecard
+{
+$basetexture "models\mm1\box"
+$mod2x 1
+
+
+$ignorez 1
+
+$STARTFADESIZE 7.0
+$ENDFADESIZE 8.0
+$overbrightfactor 10
+$depthblend 0
+}

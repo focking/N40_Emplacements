@@ -1,0 +1,8 @@
+SpriteCard
+{
+$basetexture "particles/dust_puff"
+$depthblend 1
+$STARTFADESIZE 1
+$ENDFADESIZE "1.4"
+$additive 1
+}

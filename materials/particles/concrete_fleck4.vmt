@@ -1,0 +1,7 @@
+"UnlitGeneric"
+{
+	"$basetexture" "particles/concrete_fleck4"
+	"$vertexcolor" "1"
+	"$vertexalpha" "1"
+	"$translucent" "1"	
+}

@@ -1,0 +1,6 @@
+spritecard
+{
+$basetexture "particles\ins_muzzle_glow"
+$additive 1
+$depthblend 0
+}

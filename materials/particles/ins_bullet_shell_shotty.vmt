@@ -1,0 +1,6 @@
+SpriteCard
+{
+$basetexture "particles/ins_bullet_shell_shotty"
+$depthblend 0
+$blendframes 0
+}

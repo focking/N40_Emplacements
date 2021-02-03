@@ -1,0 +1,10 @@
+"SpriteCard"
+{
+	$BASETEXTURE "particles/doi_bloodSpray_01.vtf"
+	$STARTFADESIZE .9
+	$overbrightfactor 2
+	$ENDFADESIZE 1.5
+	$BLENDFRAMES 1
+	$MINSIZE .005
+	$vertexfogamount 1.0
+}

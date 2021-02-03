@@ -1,0 +1,14 @@
+"SpriteCard"
+{
+	$basetexture "particles/ins_thick_smoke"
+	$SEQUENCE_BLEND_MODE 1 //2
+	$MAXLUMFRAMEBLEND1 0
+	$MAXLUMFRAMEBLEND2 1
+	"$depthblend" 1
+	"$depthblendscale" 50
+	$STARTFADESIZE .9
+	$ENDFADESIZE 1.5
+	"$vertexcolor" 1
+	"$vertexalpha" 1
+	"$nocull" 1
+}

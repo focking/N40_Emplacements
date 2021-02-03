@@ -1,0 +1,14 @@
+SpriteCard
+{
+$basetexture "particles/dust_01"
+
+$DUALSEQUENCE 1
+$SEQUENCE_BLEND_MODE 1
+$MAXLUMFRAMEBLEND1 0
+$MAXLUMFRAMEBLEND2 1
+$ZOOMANIMATESEQ2 2
+$blendframes 1
+$depthblend 1
+$STARTFADESIZE 1
+$ENDFADESIZE "1.5"
+}

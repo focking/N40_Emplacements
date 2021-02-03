@@ -1,0 +1,9 @@
+SpriteCard
+{
+$basetexture "particles/ins_fire_loop"
+$depthblend 1
+$overbrightfactor 4
+//$STARTFADESIZE .4
+//$ENDFADESIZE .7
+$addself 2
+}

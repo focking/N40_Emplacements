@@ -1,0 +1,8 @@
+"UnlitGeneric"
+{
+	"$basetexture" "particles/burst_01"
+	"$vertexcolor" "1"
+	"$vertexalpha" "1"
+	"$translucent" "1"	
+	"$splinetype" "2"
+}

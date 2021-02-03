@@ -1,0 +1,6 @@
+SpriteCard
+{
+$basetexture "particles/ins_fire_loop"
+$additive 1
+$depthblend 1
+}

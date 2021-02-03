@@ -1,0 +1,8 @@
+"UnlitGeneric"
+{
+	"$basetexture" "particles/gred_sperm"
+	"$vertexcolor" "1"
+	"$vertexalpha" "1"
+	"$translucent" "1"
+	
+}

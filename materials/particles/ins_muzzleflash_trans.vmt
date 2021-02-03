@@ -1,0 +1,7 @@
+"UnlitGeneric"
+{
+	"$basetexture" "particles/ins_muzzleflash_trans"
+	"$vertexcolor" "1"
+	"$vertexalpha" "1"
+	"$translucent" "1"	
+}
