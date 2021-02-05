@@ -11,7 +11,7 @@ ENT.Model = "models/Items/AR2_Grenade.mdl"
 ENT.ExplosionSounds = {"emp/impact/impact_explosion_01.wav","emp/impact/impact_explosion_02.wav","emp/impact/impact_explosion_03.wav","emp/impact/impact_explosion_04.wav"}
 ENT.Decal = "Scorch"
 ENT.Explosion = "doi_artillery_explosion"
-ENT.Scale = 1.5
+ENT.Scale = 1
 
 function ENT:Initialize()
     if SERVER then

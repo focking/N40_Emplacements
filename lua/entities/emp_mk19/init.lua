@@ -14,7 +14,7 @@ ENT.GunProjectile = "proj_40x53"
 ENT.TripodModel = "models/mk19/tripod_fin.mdl"
 ENT.GunModel = "models/mk19/mk19_fin.mdl"
 
-ENT.GunOffsetVec = Vector(0,0,18)
+ENT.GunOffsetVec = Vector(0,0,22)
 ENT.GunOffsetAng = Angle(0,90,0) 
 ENT.GunCameraUp = 7
 ENT.GunCameraForward = 0

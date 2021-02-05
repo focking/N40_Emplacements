@@ -9,9 +9,8 @@ local function Draw3DText( pos, ang, scale, text, flipView )
 	end
 
 	cam.Start3D2D( pos, ang, scale )
-		-- Actually draw the text. Customize this to your liking.
-		draw.DrawText( text, "Default", 0, 0, Color( 0, 255, 0, 255 ), TEXT_ALIGN_CENTER )
-	cam.End3D2D()
+		draw.DrawText( text, "N40_DisplayFont42", 0, 0, Color( 0, 255, 0, 255 ), TEXT_ALIGN_CENTER )
+	cam.End3D2D() 
 end
  
 function ENT:Draw()
@@ -32,3 +31,4 @@ function ENT:Draw()
 	Draw3DText( pos, ang, 0.2, text, true )
 end
 
+--Roboto

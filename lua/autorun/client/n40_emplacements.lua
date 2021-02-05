@@ -9,7 +9,8 @@ end )
 
 
 net.Receive( "n40_emp_check_ammo", function( len, pl )
-	local ammo = net.ReadFloat()
+	local ammo = net.ReadString()
+	print("ammo"..ammo)
 	local maxammo = net.ReadFloat()
 	DrawAmmoBar(ammo,maxammo)
 end )
@@ -94,7 +95,7 @@ if LocalPlayer().InEMPSights == true then
 	local view = {
 		origin = Gun:GetPos()+Gun:GetUp()*AngleData["GunCameraUp"] +Gun:GetForward()*AngleData["GunCameraForward"] + Gun:GetRight() * AngleData["GunCameraRight"] ,
 		angles = m:GetAngles(),
-		fov = fov,
+		fov = AngleData["GunCameraFOV"],
 		drawviewer = false
 	}
 
@@ -109,7 +110,7 @@ end )
 --end )
 
 surface.CreateFont( "N40_DisplayFont", {
-	font = "Bender", --  Use the font-name which is shown to you by your operating system Font Viewer, not the file name
+	font = "bender", --  Use the font-name which is shown to you by your operating system Font Viewer, not the file name
 	extended = false,
 	size = 64,
 	weight = 500,
@@ -123,9 +124,26 @@ surface.CreateFont( "N40_DisplayFont", {
 	rotary = false,
 	shadow = true,
 	additive = false,
-	outline = fatlse,
+	outline = false,
 } )
 
+surface.CreateFont( "N40_DisplayFont42", {
+	font = "bender", --  Use the font-name which is shown to you by your operating system Font Viewer, not the file name
+	extended = false,
+	size = 32,
+	weight = 500,
+	blursize = 0,
+	scanlines = 0,
+	antialias = true,
+	underline = false,
+	italic = false,
+	strikeout = false,
+	symbol = false,
+	rotary = false,
+	shadow = true,
+	additive = false,
+	outline = false,
+} )
 
 game.AddParticles( "particles/ammo_cache_ins.pcf" )
 game.AddParticles( "particles/doi_explosion_fx.pcf" )

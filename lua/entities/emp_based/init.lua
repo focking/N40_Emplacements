@@ -27,6 +27,8 @@ ENT.TripodOffsetAngle = Angle(0,0,0)
 ENT.ProjectileOffset = Vector(0,0,0) -- Projectile spawn offset 
 ENT.ExitDistance = 90 -- How far player can be from weapon
 ENT.GunRPM = 60 / 400 -- 60 Seconds / Actual RPM
+ENT.GunCameraFOV = 90
+ENT.MuzzleFlashEffect = "muzzleflash_ar2_npc"
 
 ENT.GunSoundFire = "emp/ags30/fire.wav"	-- Fire sound 
 ENT.GunSoundReload = "emp/ags30/reload.wav" -- Reload sound 
@@ -37,10 +39,10 @@ ENT.ReloadTime = 12 -- Reload time in seconds
 ENT.ManualReload = false 
 ENT.ProjectileList = {["proj_spg9_at"] = true ,["proj_spg9_shaped"] = true}
 ENT.RoundInChamber = nil 
-ENT.ManualReloadSound = "spg9/manual.wav"
-
+ENT.ManualInsertSound = ""
+ENT.ManualEjectSound = ""
 ENT.HP = 1000 
-
+ENT.ManualReloadTime = 4
 
 function ENT:Initialize()
 		if SERVER then
@@ -65,11 +67,22 @@ function ENT:Initialize()
 		["GunCameraForward"] = self.GunCameraForward,
 		["GunCameraRight"] = self.GunCameraRight,
 		["ScopeOverlay"] = self.ScopeOverlay,
+		["GunCameraFOV"] = self.GunCameraFOV,
 	}
 
 end
 
 
+
+
+function ENT:OnLastShot()
+
+end 
+
+function ENT:OnShoot(shell_angle)
+	
+
+end 
 
 ENT.InspectionTime = 0
 ENT.IsCheckingAmmo = false
@@ -79,7 +92,7 @@ function ENT:CheckAmmo()
 		self.NextFire = CurTime() + 0.5
 		self.IsCheckingAmmo = true 
 		net.Start("n40_emp_check_ammo")
-		net.WriteFloat(self.Mag)
+		net.WriteString(tostring(self.Mag))
 		net.WriteFloat(self.Magazine)
 		net.Send(self.Gunner)
 		timer.Simple(1,function()
@@ -101,9 +114,7 @@ function ENT:Think()
 		local scan_area = ents.FindInSphere(self:GetPos(), 16)
 		for k,v in pairs(scan_area) do 
 			if self.ProjectileList[v.ProjectileEnt] then 
-				v:Remove()
-				sound.Play( self.ManualReloadSound, self:GetPos(), 120, math.random(90,110), 1 )
-				self.RoundInChamber = v.ProjectileEnt
+				self:ReloadPewPewsManually(v)
 			end 
 		end 
 
@@ -131,9 +142,7 @@ function ENT:Think()
         end 
 
         if Gunner:KeyDown(IN_RELOAD) then 
-
         	self.InspectionTime = self.InspectionTime + 1
-        	print(self.InspectionTime)
         	if self.InspectionTime >= 45 then 
         		self.NextFire = CurTime()
         		self:CheckAmmo()
@@ -143,6 +152,7 @@ function ENT:Think()
 
         if Gunner:KeyReleased(IN_RELOAD) then 
         	if self.IsCheckingAmmo == false and self.InspectionTime <= 22 then
+        		if self.ManualReload == true then self:UnloadShell() return end
         		self:ReloadPewPews()
         	end
         	self.InspectionTime = 0
@@ -163,6 +173,7 @@ function ENT:Think()
 
 
 	end 
+		--debugoverlay.Cross( self.Gun:GetPos() + self.Gun:GetForward() * self.ProjectileOffset.X + self.Gun:GetRight() * self.ProjectileOffset.Y + self.Gun:GetUp() * self.ProjectileOffset.Z, 16, 0.1, Color( 255, 255, 255 ), true )
 
     self:NextThink( CurTime() ) -- Force Think() to run every tick for smoother animations 
     return true	
@@ -186,6 +197,9 @@ function ENT:ExitSight(ent)
 	self.Gunner.IN_EMP_SIGHT = false 
 
 end
+
+
+
 
 
 function ENT:EnterGun(ent)
@@ -228,15 +242,22 @@ end
 function ENT:BuildGun()
 	local gun = ents.Create("prop_physics")
 	gun:SetModel(self.GunModel)
-	gun:SetPos(self:GetPos() + self.GunOffsetVec) 
-	gun:SetAngles(self:GetAngles() - self.GunOffsetAng - self.TripodOffsetAngle)
+	gun:SetPos(self:GetPos() + self:GetForward() * self.GunOffsetVec.X + self:GetRight() * self.GunOffsetVec.Y + self:GetUp() * self.GunOffsetVec.Z) 
+	gun:SetAngles(self:GetAngles() - self.GunOffsetAng - self.TripodOffsetAngle )
 	gun:Spawn()
 	gun:SetParent(self)
 	self.Gun = gun 
+
 	self.Mag = self.Magazine
+	if self.ManualReload == true then 
+		self.Mag = 0
+	end 
 end 
 
+
+
 function ENT:ReloadPewPews()
+	if self.ManualReload == true then return end 
 	if self.IsReloading then return end 
 	self.IsReloading = true 
 	self.Mag = 0
@@ -250,12 +271,47 @@ function ENT:ReloadPewPews()
 	end)	
 end 
 
+
+function ENT:UnloadShell()
+	if self.RoundInChamber == "empty" then 
+		self:EmitSound(self.ManualEjectSound)
+		self.RoundInChamber = nil 
+		self:OnUnload() 
+	end
+end 
+
+function ENT:OnUnload()
+
+end 
+
+function ENT:OnLoad()
+
+end
+
+function ENT:ReloadPewPewsManually(shell)
+	if self.IsReloading then return end 
+	self.IsReloading = true 
+	self.Mag = 0
+	self:EmitSound(self.ManualInsertSound)
+	self.RoundInChamber = shell.ProjectileEnt
+	self.Magazine = shell.Capacity
+	shell:Remove()
+	self:OnLoad()
+	timer.Simple(self.ManualReloadTime,function()
+        if not IsValid(self) then return end
+		self.Mag = self.Magazine
+		self.IsReloading = false 
+	end)
+end 
+
+
+
 function ENT:ShootPewPews()
 
-	if self.ManualReload and not self.RoundInChamber then return end
+	if self.ManualReload == true and not self.RoundInChamber then return end
 
 	if self.Mag <= 0 or self.IsReloading == true and not self.ManualReload then 
-		self:ReloadPewPews()
+		--self:ReloadPewPews()
 	return end 
 
 	if self.NextFire <= CurTime() then 
@@ -263,7 +319,7 @@ function ENT:ShootPewPews()
 		self:EmitSound( self.GunSoundFire)
 
 		local shoot_entity = self.GunProjectile
-		if self.RoundInChamber then shoot_entity = self.RoundInChamber end
+		if self.RoundInChamber != "empty" or self.RoundInChamber != nil  then shoot_entity = self.RoundInChamber end
 
 		local babah = ents.Create(shoot_entity) -- Projectile ENT
  		local m = Matrix()
@@ -272,17 +328,24 @@ function ENT:ShootPewPews()
         self.TargetAngOffset = Matrix()
 		self.TargetAngOffset:SetAngles(self.MatrixOffsetAngle) -- Do same shit as in Think() to correct projectile angle
         m = m * self.TargetAngOffset	
-        babah:SetAngles(m:GetAngles())
-        babah:SetPos(self.Gun:GetPos()+self.ProjectileOffset) -- Apply projectile offset 
+        babah:SetAngles(m:GetAngles()) --ProjectileOffset
+        babah:SetPos(self.Gun:GetPos() + self.Gun:GetForward() * self.ProjectileOffset.X + self.Gun:GetRight() * self.ProjectileOffset.Y + self.Gun:GetUp() * self.ProjectileOffset.Z) -- Apply projectile offset 
         babah:Spawn()
         babah:Fire("Use") -- Activate projectile
+		ParticleEffect(self.MuzzleFlashEffect, self.Gun:GetPos() + self.Gun:GetForward() * self.ProjectileOffset.X + self.Gun:GetRight() * self.ProjectileOffset.Y + self.Gun:GetUp() * self.ProjectileOffset.Z,  m:GetAngles())
+		self:OnShoot(m)
 
         if self.ManualReload == true then 
-        	self.RoundInChamber = nil 
+        	self.Mag = self.Mag - 1
+        	if self.Mag <= 0 then 
+        		self:OnLastShot()
+        		self.RoundInChamber = "empty" 
+        	end
         end 
 
         if self.ManualReload == false then 
 	   		self.Mag = self.Mag - 1 -- Mag consumption
+	   		if self.Mag == 0 then self:OnLastShot() end 
 	   	end  
 
 	   	self:OnFirePewPews(self.Mag)
