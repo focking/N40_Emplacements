@@ -16,7 +16,7 @@ function ENT:Initialize()
         self:PhysicsInit( SOLID_VPHYSICS )
         self:SetUseType(SIMPLE_USE)
         self:DrawShadow( true )
-
+        self:SetAngles(self:GetAngles()+Angle(180,0,-90))
         local phys = self:GetPhysicsObject()
         if phys:IsValid() then
             phys:Wake()

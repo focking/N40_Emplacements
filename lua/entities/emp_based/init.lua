@@ -44,6 +44,9 @@ ENT.ManualEjectSound = ""
 ENT.HP = 1000 
 ENT.ManualReloadTime = 4
 
+ENT.RotationSpeed = 0.4
+
+
 function ENT:Initialize()
 		if SERVER then
 		self:SetModel(self.TripodModel)
@@ -129,14 +132,20 @@ function ENT:Think()
 			self:ExitGun(Gunner)
 		return end 
 
+
 		local m = Matrix()
+
 		ang = (Gunner:GetEyeTrace().HitPos - self:GetPos()):Angle()
         m:SetAngles(ang)
-        self.TargetAngOffset = Matrix()
+        self.TargetAngOffset = Matrix() 
 		self.TargetAngOffset:SetAngles(self.GunOffsetAng) --- Rotate gun to aim properly cuz i messed up directions 
         m = m * self.TargetAngOffset
-        Gun:SetAngles(m:GetAngles())
+    	local old = Gun:GetAngles()
 
+
+       -- Gun:SetAngles(Angle(math.Approach( old.p, m:GetAngles().p, self.RotationSpeed ),math.Approach( old.y, m:GetAngles().y, self.RotationSpeed ),math.Approach( old.r, m:GetAngles().r, self.RotationSpeed ) )) 
+        print(Gun:GetAngles())
+        Gun:SetAngles(m:GetAngles())
         if Gunner:KeyPressed(IN_FORWARD) or Gunner:KeyPressed(IN_BACK) or Gunner:KeyPressed(IN_MOVELEFT) or Gunner:KeyPressed(IN_MOVERIGHT) then 
         	self:ExitGun(Gunner)
         end 
@@ -172,8 +181,11 @@ function ENT:Think()
         end 
 
 
+
 	end 
 		--debugoverlay.Cross( self.Gun:GetPos() + self.Gun:GetForward() * self.ProjectileOffset.X + self.Gun:GetRight() * self.ProjectileOffset.Y + self.Gun:GetUp() * self.ProjectileOffset.Z, 16, 0.1, Color( 255, 255, 255 ), true )
+
+
 
     self:NextThink( CurTime() ) -- Force Think() to run every tick for smoother animations 
     return true	

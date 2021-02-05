@@ -12,7 +12,7 @@ ENT.IsReloading = false -- Internal bool, do not touch
 
 ENT.GunProjectile = "proj_40x53"
 ENT.TripodModel = "models/spg9/cooller_tripod_8.mdl"
-ENT.GunModel = "models/spg9/cooller_spg9_12.mdl"
+ENT.GunModel = "models/static/spg9_squad_fin.mdl"
 
 ENT.GunOffsetVec = Vector(4,0,15)
 
@@ -41,10 +41,20 @@ ENT.ManualInsertSound = "emp/spg9/load.wav"
 ENT.ManualEjectSound = "emp/spg9/unload.wav"
 
 function ENT:OnLastShot()
-	--self.Gun:SetBodygroup(1,1)
-	--	timer.Simple(1,function()
-	--end)
+	self.Gun:SetBodygroup(1,1)
 end 
+
+function ENT:OnUnload()
+	self.Gun:SetBodygroup(1,1)
+	self.Gun:SetBodygroup(2,0)
+end 
+
+function ENT:OnLoad()
+	print("OnLoad")
+	self.Gun:SetBodygroup(1,0)
+	self.Gun:SetBodygroup(2,1)
+end
+
 
 function ENT:OnFinishInit()
 	self.Gun:SetBodygroup(1,1)
