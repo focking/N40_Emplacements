@@ -12,7 +12,7 @@ ENT.IsReloading = false -- Internal bool, do not touch
 
 ENT.GunProjectile = "proj_40x53"
 ENT.TripodModel = "models/spg9/cooller_tripod_8.mdl"
-ENT.GunModel = "models/static/spg9_squad_fin.mdl"
+ENT.GunModel = "models/spg9/spg9_squad_fin.mdl"
 
 ENT.GunOffsetVec = Vector(4,0,15)
 

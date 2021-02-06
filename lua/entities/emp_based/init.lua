@@ -143,9 +143,8 @@ function ENT:Think()
     	local old = Gun:GetAngles()
 
 
-       -- Gun:SetAngles(Angle(math.Approach( old.p, m:GetAngles().p, self.RotationSpeed ),math.Approach( old.y, m:GetAngles().y, self.RotationSpeed ),math.Approach( old.r, m:GetAngles().r, self.RotationSpeed ) )) 
+        Gun:SetAngles(Angle(math.Approach( old.p, m:GetAngles().p, self.RotationSpeed ),math.Approach( old.y, m:GetAngles().y, self.RotationSpeed ),math.Approach( old.r, m:GetAngles().r, self.RotationSpeed ) )) 
         print(Gun:GetAngles())
-        Gun:SetAngles(m:GetAngles())
         if Gunner:KeyPressed(IN_FORWARD) or Gunner:KeyPressed(IN_BACK) or Gunner:KeyPressed(IN_MOVELEFT) or Gunner:KeyPressed(IN_MOVERIGHT) then 
         	self:ExitGun(Gunner)
         end 
