@@ -39,7 +39,12 @@ ENT.ProjectileList = {["proj_spg"] = true}
 ENT.RoundInChamber = nil 
 ENT.ManualInsertSound = "emp/spg9/load.wav"
 ENT.ManualEjectSound = "emp/spg9/unload.wav"
-
+ENT.DamageSimfphys = 5000
+ENT.RotationSpeed = 15
+ENT.MaxRotation = 15
+ENT.MaxElevation = 10
+ENT.MaxDescension = 10
+ENT.SpawnOffset = Vector(0,0,230)
 function ENT:OnLastShot()
 	self.Gun:SetBodygroup(1,1)
 end 
@@ -50,7 +55,6 @@ function ENT:OnUnload()
 end 
 
 function ENT:OnLoad()
-	print("OnLoad")
 	self.Gun:SetBodygroup(1,0)
 	self.Gun:SetBodygroup(2,1)
 end

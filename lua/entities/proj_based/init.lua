@@ -13,6 +13,7 @@ ENT.Decal = "Scorch"
 ENT.Explosion = "doi_artillery_explosion"
 ENT.Scale = 1
 
+
 function ENT:Initialize()
     if SERVER then
         self:SetModel(self.Model)
@@ -42,7 +43,8 @@ end
 function ENT:DoBabah()
    util.Decal( self.Decal, self:GetPos(), self:GetPos() + self:GetForward() * 256 , self )
    ParticleEffect( self.Explosion, self:GetPos(), self:GetAngles() )
-   util.BlastDamage( self, self,self:GetPos(), self.Damage, self.Radius )
+     util.BlastDamage( self, self.Owner, self:GetPos(), self.Damage, self.Radius )
+
    sound.Play( tostring(table.Random(self.ExplosionSounds)), self:GetPos(), 120, math.random(90,110), 1 )
    self:Remove()
 end 

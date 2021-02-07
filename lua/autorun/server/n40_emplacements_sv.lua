@@ -4,6 +4,12 @@ util.AddNetworkString( "n40_emp_enter_sight" )
 util.AddNetworkString( "n40_emp_exit_sight" )
 util.AddNetworkString( "n40_emp_check_ammo" )
 
+concommand.Add("n40_strip_weapons", function( ply, cmd, args )
+	if ply:IsSuperAdmin() then
+		ply:StripWeapons()
+	end
+end)
+
 
 concommand.Add("n40_reset_env", function( ply, cmd, args )
 	if ply:IsSuperAdmin() then

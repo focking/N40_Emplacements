@@ -23,6 +23,8 @@ ENT.GunCameraForward = 1
 ENT.GunCameraRight = 1
 ENT.ScopeOverlay = "scopes/act3/acog.png"
 
+ENT.SpawnOffset = Vector(0,0,0)
+
 ENT.TripodOffsetAngle = Angle(0,0,0)
 ENT.ProjectileOffset = Vector(0,0,0) -- Projectile spawn offset 
 ENT.ExitDistance = 90 -- How far player can be from weapon
@@ -36,19 +38,25 @@ ENT.GunSoundDistant = "emp/ags30/distant.wav" -- Distant fire sound
 ENT.Magazine = 48 -- Magazine capacity 
 ENT.ReloadTime = 12 -- Reload time in seconds
 
+ENT.RotationSpeed = 15
+ENT.MaxRotation = 15
+ENT.MaxElevation = 15
+ENT.MaxDescension = 15
+
+
 ENT.ManualReload = false 
-ENT.ProjectileList = {["proj_spg9_at"] = true ,["proj_spg9_shaped"] = true}
+ENT.ProjectileList = {["proj_spg9_at"] = true ,["proj_spg9_shaped"] = true} -- Allowed ammo defined by ProjectileEnt in Ammo Ent
 ENT.RoundInChamber = nil 
 ENT.ManualInsertSound = ""
 ENT.ManualEjectSound = ""
 ENT.HP = 1000 
 ENT.ManualReloadTime = 4
 
-ENT.RotationSpeed = 0.4
 
 
 function ENT:Initialize()
-		if SERVER then
+	if SERVER then
+
 		self:SetModel(self.TripodModel)
         self:SetMoveType( MOVETYPE_VPHYSICS )
         self:SetSolid( SOLID_VPHYSICS )
@@ -61,8 +69,12 @@ function ENT:Initialize()
             phys:Wake()
             phys:SetBuoyancyRatio(0)
         end
-    end 
 
+		self:BuildGun()
+		self:OnFinishInit()
+
+    end 
+    	self:SetPos(self:GetPos()+self.SpawnOffset)
     self.ANGLE_TABLE = {
 		["GunOffsetAng"] = self.GunOffsetAng,
 		["MatrixOffsetAngle"] = self.MatrixOffsetAngle,
@@ -102,18 +114,13 @@ function ENT:CheckAmmo()
 			self.IsCheckingAmmo = false
 		end)
 	end 
-end 
+end
+
 
 function ENT:Think()
-	
-	if self.GunBuildFinish == false then -- Gun build function, we cant put it in Initialize()
-		self:BuildGun()
-		self.GunBuildFinish = true
-		self:OnFinishInit()
-	end 
 
 	if self.ManualReload == true and not self.RoundInChamber then 
-		
+			
 		local scan_area = ents.FindInSphere(self:GetPos(), 16)
 		for k,v in pairs(scan_area) do 
 			if self.ProjectileList[v.ProjectileEnt] then 
@@ -133,21 +140,21 @@ function ENT:Think()
 		return end 
 
 
-		local m = Matrix()
-
-		ang = (Gunner:GetEyeTrace().HitPos - self:GetPos()):Angle()
-        m:SetAngles(ang)
-        self.TargetAngOffset = Matrix() 
-		self.TargetAngOffset:SetAngles(self.GunOffsetAng) --- Rotate gun to aim properly cuz i messed up directions 
-        m = m * self.TargetAngOffset
-    	local old = Gun:GetAngles()
+	self:YawCorrection()
 
 
-        Gun:SetAngles(Angle(math.Approach( old.p, m:GetAngles().p, self.RotationSpeed ),math.Approach( old.y, m:GetAngles().y, self.RotationSpeed ),math.Approach( old.r, m:GetAngles().r, self.RotationSpeed ) )) 
-        print(Gun:GetAngles())
-        if Gunner:KeyPressed(IN_FORWARD) or Gunner:KeyPressed(IN_BACK) or Gunner:KeyPressed(IN_MOVELEFT) or Gunner:KeyPressed(IN_MOVERIGHT) then 
-        	self:ExitGun(Gunner)
-        end 
+
+
+
+       if Gunner:KeyPressed(IN_FORWARD) or Gunner:KeyPressed(IN_BACK) or Gunner:KeyPressed(IN_MOVELEFT) or Gunner:KeyPressed(IN_MOVERIGHT) then 
+       	self:ExitGun(Gunner)
+       end 
+
+
+        
+       -- end 
+
+
 
         if Gunner:KeyDown(IN_RELOAD) then 
         	self.InspectionTime = self.InspectionTime + 1
@@ -188,6 +195,44 @@ function ENT:Think()
 
     self:NextThink( CurTime() ) -- Force Think() to run every tick for smoother animations 
     return true	
+end 
+
+function ENT:YawCorrection()
+	local Gunner = self.Gunner 
+	local Gun = self.Gun 
+	local m = Matrix() 
+
+	local dir = dir or Gunner:GetAimVector()
+
+	local trace = {}
+
+	trace.start = Gunner:EyePos()
+	trace.endpos = trace.start + ( dir * ( 4096 * 8 ) )
+	trace.filter = {Gunner,self,self.Gun}
+
+	ang = (util.TraceLine( trace ).HitPos - self:GetPos()):Angle()
+
+    m:SetAngles(ang)
+    self.TargetAngOffset = Matrix() 
+	self.TargetAngOffset:SetAngles(self.GunOffsetAng) --- Rotate gun to aim properly cuz i messed up directions 
+    m = m * self.TargetAngOffset
+    local old = Gun:GetAngles()
+
+
+
+    local orig = self.Gun.OriginAngles
+
+    local newyaw = math.ApproachAngle( old.y, m:GetAngles().y, self.RotationSpeed * FrameTime() )
+    if orig.y - self.MaxRotation >= self.Gun:GetLocalAngles().y then newyaw = newyaw + math.Approach( 0, 1, self.RotationSpeed * FrameTime() ) end
+    if orig.y + self.MaxRotation <= self.Gun:GetLocalAngles().y then newyaw = newyaw - math.Approach( 0, 1, self.RotationSpeed * FrameTime() ) end
+
+
+    local newelev = math.ApproachAngle( old.r, m:GetAngles().r, self.RotationSpeed * FrameTime() )
+
+    if orig.r - self.MaxElevation >= self.Gun:GetLocalAngles().r then newelev = newelev + math.Approach( 0, 1, self.RotationSpeed * FrameTime() ) end
+  	if orig.r + self.MaxDescension <= self.Gun:GetLocalAngles().r then newelev = newelev - math.Approach( 0, 1, self.RotationSpeed * FrameTime() ) end
+
+    Gun:SetAngles(Angle(math.ApproachAngle( old.p, m:GetAngles().p, self.RotationSpeed * FrameTime()),newyaw,math.ApproachAngle( old.r, newelev, self.RotationSpeed * FrameTime() ) )) 
 end 
 
 function ENT:EnterSight()
@@ -257,8 +302,8 @@ function ENT:BuildGun()
 	gun:SetAngles(self:GetAngles() - self.GunOffsetAng - self.TripodOffsetAngle )
 	gun:Spawn()
 	gun:SetParent(self)
-	self.Gun = gun 
-
+	self.Gun = gun
+	self.Gun.OriginAngles = gun:GetLocalAngles() 
 	self.Mag = self.Magazine
 	if self.ManualReload == true then 
 		self.Mag = 0
@@ -339,9 +384,12 @@ function ENT:ShootPewPews()
         self.TargetAngOffset = Matrix()
 		self.TargetAngOffset:SetAngles(self.MatrixOffsetAngle) -- Do same shit as in Think() to correct projectile angle
         m = m * self.TargetAngOffset	
+        babah.Owner = self.Owner
         babah:SetAngles(m:GetAngles()) --ProjectileOffset
         babah:SetPos(self.Gun:GetPos() + self.Gun:GetForward() * self.ProjectileOffset.X + self.Gun:GetRight() * self.ProjectileOffset.Y + self.Gun:GetUp() * self.ProjectileOffset.Z) -- Apply projectile offset 
         babah:Spawn()
+       -- print(self:GetOwner())
+   
         babah:Fire("Use") -- Activate projectile
 		ParticleEffect(self.MuzzleFlashEffect, self.Gun:GetPos() + self.Gun:GetForward() * self.ProjectileOffset.X + self.Gun:GetRight() * self.ProjectileOffset.Y + self.Gun:GetUp() * self.ProjectileOffset.Z,  m:GetAngles())
 		self:OnShoot(m)

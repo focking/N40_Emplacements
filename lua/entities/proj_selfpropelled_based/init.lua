@@ -18,13 +18,15 @@ ENT.ExplosionSounds = {"spg9/explosion.wav"}
 ENT.HasTail = false 
 ENT.Stabilization = true -- Add cuewl rotation to rocket 
 
-
 ENT.Heatseeking = false 
 ENT.Target = nil  
 ENT.HeatseekingAngle = 20
 
-ENT.TrailDelay = 0.15
+ENT.TrailDelay = 0.15 --
 ENT.TrailDelayPassed = false 
+
+ENT.HasLoopSound = true
+ENT.Loop = "loop.wav"
 
 function ENT:Initialize()
 
@@ -54,9 +56,8 @@ function ENT:Initialize()
 		tbl.MaxVelocity = 200000000
 		
 		physenv.SetPerformanceSettings(tbl)
-
     end
-
+    print(self.Owner)
 end
 
 function ENT:CreateLight()
@@ -81,7 +82,6 @@ function ENT:PostInit()
 end 
 
 function ENT:PostPostInit()
-
 end 
 
 
@@ -118,12 +118,15 @@ if SERVER then
 
       if self.HasTail == true then 
         if self.TrailDelay <= CurTime() then 
+          if self.HasLoopSound == true then 
+            self.Loop = CreateSound( self, self.LoopSound)
+            self.Loop:Play()
+          end 
           ParticleEffectAttach("ins_rockettrail",PATTACH_ABSORIGIN_FOLLOW,self,1)
           self.HasTail = false
         end 
       end
-
-  end
+  end 
 
 	if self.Heatseeking == true and self.FuseTime > 0 then 
 		  self:IRTrack()
@@ -135,8 +138,10 @@ if SERVER then
 
         local phys = self:GetPhysicsObject()
         phys:AddVelocity(self:GetForward() * self.Mass/3 * self.Velocity/3 )
+
    		end 
 	end  
+
 
 
   self:NextThink( CurTime() ) -- Set the next think to run as soon as possible, i.e. the next frame.
@@ -146,14 +151,14 @@ end
 
 end 
 
-function ENT:DoBabah(data)
+function ENT:DoBabah(owner)
 end 
 
 
 function ENT:PhysicsCollide( data, phys )
   self.FuseTime = CurTime()
   self.Stabilization = false
-   if ( data.Speed > 100 ) then self:DoBabah(data) end
+   if ( data.Speed > 100 ) then self:DoBabah(self.Owner) end
    if simfphys then 
   		 if simfphys.IsCar(data.HitEntity) then 
   		 		data.HitEntity:SetCurHealth(data.HitEntity:GetCurHealth() - self.DamageSimfphys)
@@ -161,3 +166,8 @@ function ENT:PhysicsCollide( data, phys )
     end
 end
 
+function ENT:OnRemove()
+  if self.HasLoopSound == true then 
+    self.Loop:Stop() 
+  end 
+end 

@@ -38,6 +38,12 @@ ENT.GunSoundReload = "emp/ags30/reload.wav" -- Reload sound
 ENT.GunSoundDistant = "emp/ags30/distant.wav" -- Distant fire sound 
 ENT.ManualReloadTime = 0
 
+ENT.RotationSpeed = 55
+ENT.MaxRotation = 25
+ENT.MaxElevation = 25
+ENT.MaxDescension = 10
+
+
 function ENT:OnLoad()
 	self.VisualMagazine = ents.Create("prop_physics")
 	self.VisualMagazine:SetModel("models/escape from tarkov/static/weapons/magazine.mdl")
@@ -57,6 +63,16 @@ function ENT:OnUnload()
 	dummy:SetBodygroup(1,1)
 end
 
+function ENT:OnFinishInit()
+	--self.ScopeModel = ents.Create("prop_physics")
+	--self.ScopeModel:SetModel("models/escape from tarkov/static/weapons/npz pag-17.mdl")
+	--self.ScopeModel:SetPos(self.Gun:GetPos())
+	--self.ScopeModel:SetAngles(self.Gun:GetAngles())
+	--self.ScopeModel:Spawn()
+	--self.ScopeModel:SetParent(self.Gun)
+end 
+
+--models/escape from tarkov/static/weapons/npz pag-17.mdl
 function ENT:OnFinishReload()
 	--self.VisualMagazine = ents.Create("prop_physics")
 	--self.VisualMagazine:SetModel("models/escape from tarkov/static/weapons/magazine.mdl")

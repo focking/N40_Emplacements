@@ -14,13 +14,14 @@ ENT.Explosion = "high_explosive_air"
 ENT.IsHEAT = false 
 ENT.FuseTime = 0.25
 ENT.Stabilization = true
+ENT.HasLoopSound = false
 
-function ENT:DoBabah()
+function ENT:DoBabah(bruh)
    self:Remove()
-   util.Decal( self.Decal, self:GetPos(), self:GetPos() + self:GetForward() * 256 , self )
-   ParticleEffect( self.Explosion, self:GetPos(), self:GetAngles() )
-   util.BlastDamage( self, self, self:GetPos(), self.Damage, self.Radius )
-   sound.Play( tostring(table.Random(self.ExplosionSounds)), self:GetPos(), 120, math.random(90,110), 1 )
+  util.Decal( self.Decal, self:GetPos(), self:GetPos() + self:GetForward() * 256 , self )
+  ParticleEffect( self.Explosion, self:GetPos(), self:GetAngles() )
+  util.BlastDamage( self, self.Owner, self:GetPos(), self.Damage, self.Radius )
+  sound.Play( tostring(table.Random(self.ExplosionSounds)), self:GetPos(), 120, math.random(90,110), 1 )
 end
 
 function ENT:PostPostInit()
