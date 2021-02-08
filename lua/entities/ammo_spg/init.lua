@@ -10,7 +10,7 @@ function ENT:Initialize()
         self.ProjectileEnt = "proj_spg"
         self.Capacity = 1
         self:SetNWString("Projectile",self.ProjectilePrintName)
-		self:SetModel("models/spg9/cooller_round_4.mdl")
+		self:SetModel("models/spg9/spg9_rocket_squad.mdl")
         self:SetMoveType( MOVETYPE_VPHYSICS )
         self:SetSolid( SOLID_VPHYSICS )
         self:PhysicsInit( SOLID_VPHYSICS )

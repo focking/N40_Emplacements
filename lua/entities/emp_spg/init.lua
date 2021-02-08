@@ -10,9 +10,8 @@ ENT.Gunner = nil -- Internal ent, do not touch, represents player
 ENT.Gun = nil -- Internal ent, do not touch, represents turret 
 ENT.IsReloading = false -- Internal bool, do not touch
 
-ENT.GunProjectile = "proj_40x53"
-ENT.TripodModel = "models/spg9/cooller_tripod_8.mdl"
-ENT.GunModel = "models/spg9/spg9_squad_fin.mdl"
+ENT.TripodModel = "models/spg9/spg9_tripod_squad.mdl"
+ENT.GunModel = "models/spg9/spg9_tube_squad.mdl"
 
 ENT.GunOffsetVec = Vector(4,0,15)
 

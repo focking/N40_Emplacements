@@ -136,9 +136,9 @@ SWEP.AimTime = 0.25
 function SWEP:PostShootRound(bulletid)
     if SERVER then 
         timer.Simple(0.2,function()
-            print(self.Owner)
-            local ply = self.Owner
 
+            local ply = self.Owner
+            if not ply:Alive() then return end
             local trace = {}
             trace.start = ply:EyePos()
             trace.endpos = trace.start + ( ply:GetRight() * 28 )
