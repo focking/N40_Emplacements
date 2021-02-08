@@ -25,7 +25,7 @@ end)
 
 concommand.Add("n40_emp_info", function( ply, cmd, args )
 	print("=============================")
-	print("Ver. 0502")
+	print("Ver. 0802")
 	print("N40 Emplacements Warning!")
 	print("Due changes to enviroment physics this addon can cause unpredictable projectile behaviour.")
 	print("You can restore env settings by typing 'n40_reset_env' in console")	

@@ -26,7 +26,7 @@ SWEP.WorldModelPos = Vector(1.083, 0.833, -4)
 SWEP.WorldModelAng = Angle(-12, 0, 180)
 SWEP.WorldModelScale = 0.85
 
-SWEP.NewMuzzleOffset = Vector(4, 1, 16)
+SWEP.NewMuzzleOffset = Vector(4, 1, 14)
 
 SWEP.ReloadSoundsTable = {
     {
@@ -35,7 +35,7 @@ SWEP.ReloadSoundsTable = {
     },
 }
 
-SWEP.TrueIronsPos = Vector(0, 7, -6.8)
+SWEP.TrueIronsPos = Vector(0, 9, -7.86)
 SWEP.TrueIronsAng = Vector(0, 0, 0)
 
 SWEP.LowPos = Vector(4.623, 18.693, -13.266)
