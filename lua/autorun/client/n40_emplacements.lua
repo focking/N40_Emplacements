@@ -4,7 +4,16 @@ net.Receive( "n40_emp_enter_sight", function( len, pl )
 	if LocalPlayer().InEMPSights == true then return end
 	AngleData = net.ReadTable() 
 	Gun = net.ReadEntity() 
+	ZeroingIndex = 1 
+	ScopeOverlay = nil
+	MaxZeroingIndex = table.Count( AngleData["ZeroingTable"] ) - 1
+	if AngleData["ScopeOverlay"] == "none" then ScopeOverlay = false else 
+		ScopeOverlay = Material(AngleData["ScopeOverlay"] )
+	end
 	LocalPlayer().InEMPSights = true
+
+	--print(MaxZeroingIndex)
+	--print(AngleData["ZeroingTable"][1])
 end )
 
 
@@ -21,7 +30,7 @@ function DrawAmmoBar(ammo,maxammo)
 	local font = "N40_DisplayFont"
 	local lifetime = 4
 	local posx = ScrW()*0.85
-	local posy = ScrH()*0.85
+	local posy = ScrH()*0.75
 
 	TextShit[text] = {["text"] = text,["font"] = font,["posx"] = posx, ["posy"] = posy, ["color"] = Color(255,255,255,255),["fading"] = false}
 
@@ -67,14 +76,61 @@ function DrawAmmoBar(ammo,maxammo)
 			end
 		end)
 	end 
-
-
 end 
 
+function DrawZeroingBar(ammo)
+	local TextShit = {}
+	local font = "N40_DisplayFont"
+	local lifetime = 4
+	local text = tostring(ammo)
+	local posx = ScrW()*0.85
+	local posy = ScrH()*0.85
+
+	TextShit[text] = {["text"] = text,["font"] = font,["posx"] = posx, ["posy"] = posy, ["color"] = Color(255,255,255,255),["fading"] = false}
+
+	TextShit[text].startVal = 0
+	TextShit[text].endVal = 255
+	TextShit[text].speed = 255
+
+	TextShit[text].alpha = 0	
+
+	hook.Add("HUDPaint", "HandlerN40Zeruing", function() 
+		for k,v in pairs(TextShit) do 
+
+			TextShit[text].alpha = TextShit[text].alpha + TextShit[text].speed * FrameTime( )
+			TextShit[text].alpha = math.Clamp( TextShit[text].alpha, TextShit[text].startVal, TextShit[text].endVal )
 
 
+			surface.SetFont( v["font"] )
 
+			if v["fading"] == true then 
+				TextShit[text].speed = -255
+			end 
 
+			local width, height = surface.GetTextSize( v["text"] )
+			surface.SetDrawColor(0,0,0,2)
+			surface.DrawRect(  v["posx"]-3, v["posy"], width+6, height )
+
+			surface.SetTextColor( 255, 255, 255,TextShit[text].alpha  )
+			surface.SetTextPos( v["posx"], v["posy"] ) 
+			surface.DrawText( v["text"] )
+
+		end 
+	end)
+
+	for k, v in pairs(TextShit) do 
+		timer.Simple(lifetime/2,function()
+			if TextShit[k] then 
+				TextShit[k]["fading"] = true
+			end
+		end)
+		timer.Simple(lifetime,function()
+			if TextShit[k] then 
+				TextShit[k] = nil
+			end
+		end)
+	end 
+end 
 
 net.Receive( "n40_emp_exit_sight", function( len, pl )
 	LocalPlayer().InEMPSights = false
@@ -87,14 +143,11 @@ end )
 hook.Add( "CalcView", "CalcViewOpticsN40", function( ply, pos, angles, fov )
 if LocalPlayer().InEMPSights == true then 
 	local m = Matrix()
-	ang = (LocalPlayer():GetEyeTrace().HitPos - Gun:GetPos()):Angle()
-	m:SetAngles(ang)
-	Mat = Matrix()
-	Mat:SetAngles(Angle(0,0,0))
-	m = m * Mat
+	ang = (LocalPlayer():GetEyeTrace().HitPos - LocalPlayer():GetPos()):Angle()
+
 	local view = {
 		origin = Gun:GetPos()+Gun:GetUp()*AngleData["GunCameraUp"] +Gun:GetForward()*AngleData["GunCameraForward"] + Gun:GetRight() * AngleData["GunCameraRight"] ,
-		angles = m:GetAngles(),
+		angles = angles,
 		fov = AngleData["GunCameraFOV"],
 		drawviewer = false
 	}
@@ -103,11 +156,106 @@ if LocalPlayer().InEMPSights == true then
 end
 end )
 
---hook.Add( "HUDPaint", "HudPaintOpticsN40", function()
---	if LocalPlayer().InEMPSights == true then 
--- --	 DrawMaterialOverlay(AngleData["ScopeOverlay"], 0)
---	end
---end )
+
+hook.Add( "AdjustMouseSensitivity", "AdjustMouseSensitivityEMP", function( defaultSensitivity  )
+	if LocalPlayer().InEMPSights == true then 
+		return AngleData["ScopeSensetivity"]
+	end
+
+end)
+
+
+NEXT_SCROLL = CurTime()
+
+hook.Add("InputMouseApply", "testMouseWheel", function(cmd, x, y, ang)
+	if LocalPlayer().InEMPSights == true then 
+
+		if ( input.WasMouseReleased( MOUSE_WHEEL_UP ) ) then 
+			if NEXT_SCROLL <= CurTime() and ZeroingIndex != MaxZeroingIndex  then 
+				NEXT_SCROLL = CurTime() + 0.11
+				ZeroingIndex = ZeroingIndex + 1
+				 AngleData["GunCameraUp"] = AngleData["ZeroingTable"][ZeroingIndex]["CamUp"]
+				 DrawZeroingBar(AngleData["ZeroingTable"][ZeroingIndex]["Distance"])
+			else
+			DrawZeroingBar(AngleData["ZeroingTable"][ZeroingIndex]["Distance"]) 
+			end 
+		end
+
+		if ( input.WasMouseReleased( MOUSE_WHEEL_DOWN ) ) then 
+			if NEXT_SCROLL <= CurTime() and ZeroingIndex > 1  then 
+				NEXT_SCROLL = CurTime() + 0.11
+				ZeroingIndex = ZeroingIndex - 1
+				AngleData["GunCameraUp"] = AngleData["ZeroingTable"][ZeroingIndex]["CamUp"]
+				DrawZeroingBar(AngleData["ZeroingTable"][ZeroingIndex]["Distance"])
+			else 
+				DrawZeroingBar(AngleData["ZeroingTable"][ZeroingIndex]["Distance"])
+			end 
+		end
+
+
+
+	end
+end)
+
+
+
+
+
+
+local hide = {
+	["CHudWeaponSelection"] = true,
+	["CHudCrosshair"] = true,
+}
+
+hook.Add( "HUDShouldDraw", "HideHUD", function( name )
+	if LocalPlayer().InEMPSights == true then 
+		if ( hide[ name ] ) then
+			return false
+		end
+	end
+end )
+
+
+--ScopeOverlay
+hook.Add( "HUDPaint", "EMPHUD", function()
+
+	if LocalPlayer().InEMPSights == true and ScopeOverlay != false then 
+
+ --- Scope overlay from ACT3 by Arctic
+    local x = ScrW()/2
+    local y = ScrH()/2
+
+		local scopesize = ScrH()
+   		scopesize = math.ceil(scopesize * 1.05)
+
+   		local scopeposx = x - ( scopesize / 2 )
+    	local scopeposy = y - ( scopesize / 2 )
+
+		surface.SetDrawColor( 0, 0, 0 )
+
+  		surface.SetDrawColor( 0, 0, 0 )
+
+        surface.DrawRect( scopeposx - ScrW(), scopeposy - ScrH(), 4 * ScrW(), ScrH() )
+        surface.DrawRect( scopeposx - ScrW(), scopeposy + scopesize , 4 * ScrW(), ScrH() )
+
+        surface.DrawRect( scopeposx - ScrW(), scopeposy - ScrH(), ScrW(), 4 * ScrH() )
+        surface.DrawRect( scopeposx + scopesize, scopeposy - ScrH() , ScrW(), 4 * ScrH() )
+
+        surface.SetMaterial( ScopeOverlay )
+    	surface.DrawTexturedRect( scopeposx, scopeposy, scopesize, scopesize )
+	end 
+
+end 
+
+
+)
+hook.Add( "HUDShouldDraw", "DistanceMeter", function( name )
+	--if LocalPlayer().InEMPSights == true and ScopeOverlay != false then 
+	--	local tr = LocalPlayer():GetEyeTrace()
+	--	print(LocalPlayer():GetPos():Distance(tr.HitPos)* 1.95 / 100)
+	--end
+end )
+
 
 surface.CreateFont( "N40_DisplayFont", {
 	font = "bender", --  Use the font-name which is shown to you by your operating system Font Viewer, not the file name

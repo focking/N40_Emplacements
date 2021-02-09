@@ -22,7 +22,7 @@ ENT.TripodOffsetAngle = Angle(0,-90,0)
 ENT.GunCameraUp = 24
 ENT.GunCameraForward = 0
 ENT.GunCameraRight = 0
-
+ENT.ZeroingTable = {[1] = {["Distance"] = 100, ["CamUp"] = 24}}
 ENT.ManualReload = true 
 ENT.ProjectileList = {["proj_30x29"] = true}
 ENT.RoundInChamber = nil 
@@ -43,6 +43,9 @@ ENT.MaxRotation = 25
 ENT.MaxElevation = 25
 ENT.MaxDescension = 10
 
+ENT.ManualReloadZoneMaxs = Vector(8,8,8) -- BBOX of manual reloading zone
+ENT.ManualReloadZoneMins = Vector(-8,-8,-8)
+ENT.ManualReloadZoneOffset = Vector(-10,1,14)
 
 function ENT:OnLoad()
 	self.VisualMagazine = ents.Create("prop_physics")

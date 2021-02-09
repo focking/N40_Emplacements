@@ -28,6 +28,8 @@ ENT.TrailDelayPassed = false
 ENT.HasLoopSound = true
 ENT.Loop = "loop.wav"
 
+ENT.Exploded = false 
+
 function ENT:Initialize()
 
     if SERVER then
@@ -49,13 +51,13 @@ function ENT:Initialize()
         self:PostInit()
         self:CreateLight()
 
-	
-		
-		local tbl = physenv.GetPerformanceSettings()
-		
-		tbl.MaxVelocity = 200000000
-		
-		physenv.SetPerformanceSettings(tbl)
+  
+    
+    local tbl = physenv.GetPerformanceSettings()
+    
+    tbl.MaxVelocity = 200000000
+    
+    physenv.SetPerformanceSettings(tbl)
     end
     print(self.Owner)
 end
@@ -105,20 +107,20 @@ ENT.NextAng = CurTime()
 function ENT:Think()
 
 if SERVER then 
-
+    
      if self.Stabilization == true then 
       local phys = self:GetPhysicsObject()
         phys:AddAngleVelocity( Vector(90,0,0) )
      end 
-
+     self:WireGuide()
   if self.FuseTime >= CurTime() then 
-
       local phys = self:GetPhysicsObject()
-      	phys:ApplyForceCenter(self:GetForward() * self.Mass * self.Velocity )
+        phys:ApplyForceCenter(self:GetForward() * self.Mass * self.Velocity )
 
       if self.HasTail == true then 
         if self.TrailDelay <= CurTime() then 
           if self.HasLoopSound == true then 
+
             self.Loop = CreateSound( self, self.LoopSound)
             self.Loop:Play()
           end 
@@ -128,19 +130,19 @@ if SERVER then
       end
   end 
 
-	if self.Heatseeking == true and self.FuseTime > 0 then 
-		  self:IRTrack()
-   		if IsValid(self.Target) and self.NextAng <= CurTime() then 
+  if self.Heatseeking == true and self.FuseTime > 0 then 
+      self:IRTrack()
+      if IsValid(self.Target) and self.NextAng <= CurTime() then 
         self.Target:EmitSound("weapons/lase.wav")
-   			local dist = self:GetPos():Distance(self.Target:GetPos())
-   		  local diff = (self.Target:GetPos()+self.Target:OBBCenter() - self:GetPos()):Angle()
+        local dist = self:GetPos():Distance(self.Target:GetPos())
+        local diff = (self.Target:GetPos()+self.Target:OBBCenter() - self:GetPos()):Angle()
         self:SetAngles(diff)
 
         local phys = self:GetPhysicsObject()
-        phys:AddVelocity(self:GetForward() * self.Mass/3 * self.Velocity/3 )
+       -- phys:AddVelocity(self:GetForward() * self.Mass/3 * self.Velocity/3 )
 
-   		end 
-	end  
+      end 
+  end  
 
 
 
@@ -154,20 +156,47 @@ end
 function ENT:DoBabah(owner)
 end 
 
+function ENT:WireGuide()
+  if self.WireGuided == true and self.FuseTime >= CurTime() then 
+
+
+    if self.BaseEmp.Gunner then 
+        local trace = self.BaseEmp.Gunner:GetEyeTrace().HitPos 
+        local guide = (trace - self:GetPos()):Angle()
+  
+        local p = math.ApproachAngle(self:GetAngles().p, guide.p, 0.1)
+        local y = math.ApproachAngle(self:GetAngles().y, guide.y, 0.1)
+        local r = math.ApproachAngle(self:GetAngles().r, guide.r, 0.1)
+
+        self:SetAngles(Angle(p,y,r))
+        local phys = self:GetPhysicsObject()
+        phys:AddVelocity(self:GetForward() * self.Mass/3 * self.Velocity/3 )
+    end 
+
+
+  end 
+end 
 
 function ENT:PhysicsCollide( data, phys )
   self.FuseTime = CurTime()
   self.Stabilization = false
-   if ( data.Speed > 100 ) then self:DoBabah(self.Owner) end
-   if simfphys then 
-  		 if simfphys.IsCar(data.HitEntity) then 
-  		 		data.HitEntity:SetCurHealth(data.HitEntity:GetCurHealth() - self.DamageSimfphys)
-  		 end
-    end
+  if self.Exploded == false then 
+    self.Exploded = true
+    if data.HitEntity == self.BaseEmp then return end 
+    if ( data.Speed > 100 ) then self:DoBabah(self.Owner) end
+    if simfphys then 
+        if simfphys.IsCar(data.HitEntity) then 
+           data.HitEntity:SetCurHealth(data.HitEntity:GetCurHealth() - self.DamageSimfphys)
+        end
+     end
+  end
 end
+
 
 function ENT:OnRemove()
   if self.HasLoopSound == true then 
-    self.Loop:Stop() 
+    if self.Loop:IsPlaying() then 
+      self.Loop:Stop() 
+    end
   end 
 end 

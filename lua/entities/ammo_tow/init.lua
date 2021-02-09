@@ -7,10 +7,10 @@ ENT.ProjectilePrintName = "SPG-9 HE"
 
 function ENT:Initialize()
 		if SERVER then
-        self.ProjectileEnt = "proj_spg"
+        self.ProjectileEnt = "proj_tow"
         self.Capacity = 1
         self:SetNWString("Projectile",self.ProjectilePrintName)
-		self:SetModel("models/spg9/spg9_rocket_squad.mdl")
+		self:SetModel("models/kali/weapons/tow/parts/m220 tow launcher missile tube.mdl")
         self:SetMoveType( MOVETYPE_VPHYSICS )
         self:SetSolid( SOLID_VPHYSICS )
         self:PhysicsInit( SOLID_VPHYSICS )
@@ -24,7 +24,7 @@ function ENT:Initialize()
             phys:SetMass(20)
         end
     end
-end 
+end
 
 function ENT:Use(activator,caller)
     activator:PickupObject( self )

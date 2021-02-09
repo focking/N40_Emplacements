@@ -12,14 +12,17 @@ ENT.IsReloading = false -- Internal bool, do not touch
 
 ENT.TripodModel = "models/spg9/spg9_tripod_squad.mdl"
 ENT.GunModel = "models/spg9/spg9_tube_squad.mdl"
-
+ 
 ENT.GunOffsetVec = Vector(4,0,15)
 
 ENT.GunOffsetAng = Angle(0,90,0) 
-ENT.GunCameraUp = 12
+
+ENT.GunCameraUp = 12 --12 - 50m, 13 - 100m, 13.5 - 150m
 ENT.GunCameraForward = 3.4 
 ENT.GunCameraRight = 22
 ENT.GunCameraFOV = 40
+ENT.ZeroingTable = {[1] = {["Distance"] = 50, ["CamUp"] = 12},[2] = {["Distance"] = 100, ["CamUp"] = 13},[3] = {["Distance"] = 150, ["CamUp"] = 13.5}}
+ENT.ScopeSensetivity = 0.25
 ENT.MatrixOffsetAngle = Angle(0,-90,0) -- Matrix rotation
 ENT.ProjectileOffset = Vector(0,86,8) -- Projectile spawn offset 
 ENT.ExitDistance = 128 -- How far player can be from weapon
@@ -43,6 +46,7 @@ ENT.RotationSpeed = 15
 ENT.MaxRotation = 15
 ENT.MaxElevation = 10
 ENT.MaxDescension = 10
+
 ENT.SpawnOffset = Vector(0,0,230)
 function ENT:OnLastShot()
 	self.Gun:SetBodygroup(1,1)

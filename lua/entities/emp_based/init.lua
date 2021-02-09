@@ -2,7 +2,7 @@ AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 include("shared.lua")
 
-ENT.StaicWeaponName = "MK-19"
+ENT.StaicWeaponName = "MK-19" 
 
 ENT.NextFire = CurTime() -- Internal var, do not touch, used for shoot delay
 ENT.GunBuildFinish = false -- Internal bool, do not touch
@@ -10,6 +10,10 @@ ENT.Gunner = nil -- Internal ent, do not touch, represents player
 ENT.Gun = nil -- Internal ent, do not touch, represents turret 
 ENT.IsReloading = false -- Internal bool, do not touch
 ENT.NextScope = CurTime() -- Internal var, do not touch, used for scope delay
+ENT.InspectionTime = 0 -- Internal var, do not touch, used for scope delay
+ENT.IsCheckingAmmo = false -- Internal bool, do not touch
+
+
 
 ENT.GunProjectile = "ags_projectile"
 ENT.TripodModel = "models/models/tripod.mdl"
@@ -21,8 +25,10 @@ ENT.MatrixOffsetAngle = Angle(0,-90,0) -- Matrix rotation
 ENT.GunCameraUp = 1 -- Gun camera Z offset
 ENT.GunCameraForward = 1
 ENT.GunCameraRight = 1
-ENT.ScopeOverlay = "scopes/act3/acog.png"
+ENT.ScopeOverlay = "none"
 
+
+ENT.ScopeSensetivity = 1
 ENT.SpawnOffset = Vector(0,0,0)
 
 ENT.TripodOffsetAngle = Angle(0,0,0)
@@ -31,7 +37,7 @@ ENT.ExitDistance = 90 -- How far player can be from weapon
 ENT.GunRPM = 60 / 400 -- 60 Seconds / Actual RPM
 ENT.GunCameraFOV = 90
 ENT.MuzzleFlashEffect = "muzzleflash_ar2_npc"
-
+ENT.ZeroingTable = {}
 ENT.GunSoundFire = "emp/ags30/fire.wav"	-- Fire sound 
 ENT.GunSoundReload = "emp/ags30/reload.wav" -- Reload sound 
 ENT.GunSoundDistant = "emp/ags30/distant.wav" -- Distant fire sound 
@@ -43,6 +49,9 @@ ENT.MaxRotation = 15
 ENT.MaxElevation = 15
 ENT.MaxDescension = 15
 
+ENT.ManualReloadZoneMaxs = Vector(8,8,8) -- BBOX of manual reloading zone
+ENT.ManualReloadZoneMins = Vector(-8,-8,-8)
+ENT.ManualReloadZoneOffset = Vector(0,-32,8) -- Offset of BBOX
 
 ENT.ManualReload = false 
 ENT.ProjectileList = {["proj_spg9_at"] = true ,["proj_spg9_shaped"] = true} -- Allowed ammo defined by ProjectileEnt in Ammo Ent
@@ -50,7 +59,7 @@ ENT.RoundInChamber = nil
 ENT.ManualInsertSound = ""
 ENT.ManualEjectSound = ""
 ENT.HP = 1000 
-ENT.ManualReloadTime = 4
+ENT.ManualReloadTime = 4 -- Delay in seconds before shell loaded in and ready
 
 
 
@@ -75,15 +84,19 @@ function ENT:Initialize()
 
     end 
     	self:SetPos(self:GetPos()+self.SpawnOffset)
-    self.ANGLE_TABLE = {
-		["GunOffsetAng"] = self.GunOffsetAng,
-		["MatrixOffsetAngle"] = self.MatrixOffsetAngle,
-		["GunCameraUp"] = self.GunCameraUp,
-		["GunCameraForward"] = self.GunCameraForward,
-		["GunCameraRight"] = self.GunCameraRight,
-		["ScopeOverlay"] = self.ScopeOverlay,
-		["GunCameraFOV"] = self.GunCameraFOV,
-	}
+
+    	self.ANGLE_TABLE = {
+			["GunOffsetAng"] = self.GunOffsetAng,
+			["MatrixOffsetAngle"] = self.MatrixOffsetAngle,
+			["GunCameraUp"] = self.GunCameraUp,
+			["GunCameraForward"] = self.GunCameraForward,
+			["GunCameraRight"] = self.GunCameraRight,
+			["ScopeOverlay"] = self.ScopeOverlay,
+			["GunCameraFOV"] = self.GunCameraFOV,
+		    ["ZeroingTable"] = self.ZeroingTable, 
+		    ["ScopeOverlay"] = self.ScopeOverlay,
+		    ["ScopeSensetivity"] = self.ScopeSensetivity,
+		}
 
 end
 
@@ -95,12 +108,10 @@ function ENT:OnLastShot()
 end 
 
 function ENT:OnShoot(shell_angle)
-	
 
 end 
 
-ENT.InspectionTime = 0
-ENT.IsCheckingAmmo = false
+
 
 function ENT:CheckAmmo()
 	if self.IsCheckingAmmo == false then 
@@ -120,8 +131,8 @@ end
 function ENT:Think()
 
 	if self.ManualReload == true and not self.RoundInChamber then 
-			
-		local scan_area = ents.FindInSphere(self:GetPos(), 16)
+		local gunpos = self.Gun:GetPos() + self.Gun:GetForward() * self.ManualReloadZoneOffset.X + self.Gun:GetRight() * self.ManualReloadZoneOffset.Y + self.Gun:GetUp() * self.ManualReloadZoneOffset.Z
+		local scan_area = ents.FindInBox(gunpos + self.ManualReloadZoneMins, gunpos + self.ManualReloadZoneMaxs)
 		for k,v in pairs(scan_area) do 
 			if self.ProjectileList[v.ProjectileEnt] then 
 				self:ReloadPewPewsManually(v)
@@ -140,10 +151,7 @@ function ENT:Think()
 		return end 
 
 
-	self:YawCorrection()
-
-
-
+		self:YawCorrection()	
 
 
        if Gunner:KeyPressed(IN_FORWARD) or Gunner:KeyPressed(IN_BACK) or Gunner:KeyPressed(IN_MOVELEFT) or Gunner:KeyPressed(IN_MOVERIGHT) then 
@@ -189,12 +197,23 @@ function ENT:Think()
 
 
 	end 
-		--debugoverlay.Cross( self.Gun:GetPos() + self.Gun:GetForward() * self.ProjectileOffset.X + self.Gun:GetRight() * self.ProjectileOffset.Y + self.Gun:GetUp() * self.ProjectileOffset.Z, 16, 0.1, Color( 255, 255, 255 ), true )
 
 
+
+
+	debugoverlay.BoxAngles( self.Gun:GetPos(), self.ManualReloadZoneMins, self.ManualReloadZoneMaxs, self.Gun:GetAngles(),0.1, Color( 255, 255, 255,0 ) )
+	debugoverlay.BoxAngles( self.Gun:GetPos() + self.Gun:GetForward() * self.ManualReloadZoneOffset.X + self.Gun:GetRight() * self.ManualReloadZoneOffset.Y + self.Gun:GetUp() * self.ManualReloadZoneOffset.Z, self.ManualReloadZoneMins, self.ManualReloadZoneMaxs, self.Gun:GetAngles(),0.1, Color( 255, 255, 255,0 ) )
+
+
+
+	self:PostThink()
 
     self:NextThink( CurTime() ) -- Force Think() to run every tick for smoother animations 
     return true	
+end 
+
+function ENT:PostThink()
+
 end 
 
 function ENT:YawCorrection()
@@ -308,8 +327,12 @@ function ENT:BuildGun()
 	if self.ManualReload == true then 
 		self.Mag = 0
 	end 
+	self:OnGunBuild()
 end 
 
+function ENT:OnGunBuild()
+
+end 
 
 
 function ENT:ReloadPewPews()
@@ -385,6 +408,7 @@ function ENT:ShootPewPews()
 		self.TargetAngOffset:SetAngles(self.MatrixOffsetAngle) -- Do same shit as in Think() to correct projectile angle
         m = m * self.TargetAngOffset	
         babah.Owner = self.Owner
+        babah.BaseEmp = self
         babah:SetAngles(m:GetAngles()) --ProjectileOffset
         babah:SetPos(self.Gun:GetPos() + self.Gun:GetForward() * self.ProjectileOffset.X + self.Gun:GetRight() * self.ProjectileOffset.Y + self.Gun:GetUp() * self.ProjectileOffset.Z) -- Apply projectile offset 
         babah:Spawn()
