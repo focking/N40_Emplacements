@@ -59,7 +59,7 @@ function ENT:Initialize()
     
     physenv.SetPerformanceSettings(tbl)
     end
-    print(self.Owner)
+
 end
 
 function ENT:CreateLight()

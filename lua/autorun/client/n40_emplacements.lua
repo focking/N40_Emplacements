@@ -1,4 +1,4 @@
-print("N40 Emplacements CL")
+print("N40 Emplacements CL") 
 
 net.Receive( "n40_emp_enter_sight", function( len, pl )
 	if LocalPlayer().InEMPSights == true then return end
@@ -207,7 +207,7 @@ local hide = {
 	["CHudCrosshair"] = true,
 }
 
-hook.Add( "HUDShouldDraw", "HideHUD", function( name )
+hook.Add( "HUDShouldDraw", "HideHUDBruh", function( name )
 	if LocalPlayer().InEMPSights == true then 
 		if ( hide[ name ] ) then
 			return false
