@@ -142,8 +142,8 @@ end )
 
 hook.Add( "CalcView", "CalcViewOpticsN40", function( ply, pos, angles, fov )
 if LocalPlayer().InEMPSights == true then 
-	local m = Matrix()
-	ang = (LocalPlayer():GetEyeTrace().HitPos - LocalPlayer():GetPos()):Angle()
+	--local m = Matrix()
+	--ang = (LocalPlayer():GetEyeTrace().HitPos - LocalPlayer():GetPos()):Angle()
 
 	local view = {
 		origin = Gun:GetPos()+Gun:GetUp()*AngleData["GunCameraUp"] +Gun:GetForward()*AngleData["GunCameraForward"] + Gun:GetRight() * AngleData["GunCameraRight"] ,
@@ -349,7 +349,6 @@ game.AddParticles( "particles/gb_flash.pcf")
 game.AddParticles( "particles/gb_m18.pcf")
 game.AddParticles( "particles/gb_hazexplosion.pcf")
 game.AddParticles( "particles/gb_moab.pcf")
-game.AddParticles( "particles/ayykyu_muzzleflashes.pcf")
 
 PrecacheParticleSystem("muzzleflash_pistol_red")
 PrecacheParticleSystem("muzzleflash_pistol_rbull")

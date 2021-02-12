@@ -16,6 +16,7 @@ ENT.GunModel = "models/spg9/spg9_tube_squad.mdl"
 ENT.GunOffsetVec = Vector(4,0,15)
 
 ENT.GunOffsetAng = Angle(0,90,0) 
+ENT.GunSpawnAngle = Angle(0,-90,0)
 
 ENT.GunCameraUp = 12 --12 - 50m, 13 - 100m, 13.5 - 150m
 ENT.GunCameraForward = 3.4 

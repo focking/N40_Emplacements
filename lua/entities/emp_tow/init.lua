@@ -16,6 +16,7 @@ ENT.GunModel = "models/kali/weapons/tow/parts/m220 tow launcher barrel.mdl"
 ENT.GunOffsetVec = Vector(0,0,34)
 
 ENT.GunOffsetAng = Angle(0,0,0) 
+ENT.GunSpawnAngle = Angle(0,0,0)
 
 ENT.GunCameraUp = 0 --12 - 50m, 13 - 100m, 13.5 - 150m
 ENT.GunCameraForward = 3.4 

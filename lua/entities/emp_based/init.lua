@@ -13,7 +13,7 @@ ENT.NextScope = CurTime() -- Internal var, do not touch, used for scope delay
 ENT.InspectionTime = 0 -- Internal var, do not touch, used for scope delay
 ENT.IsCheckingAmmo = false -- Internal bool, do not touch
 
-
+ENT.GunSpawnAngle = Angle(0,0,0)
 
 ENT.GunProjectile = "ags_projectile"
 ENT.TripodModel = "models/models/tripod.mdl"
@@ -27,7 +27,6 @@ ENT.GunCameraForward = 1
 ENT.GunCameraRight = 1
 ENT.ScopeOverlay = "none"
 
-
 ENT.ScopeSensetivity = 1
 ENT.SpawnOffset = Vector(0,0,0)
 
@@ -38,7 +37,7 @@ ENT.GunRPM = 60 / 400 -- 60 Seconds / Actual RPM
 ENT.GunCameraFOV = 90
 ENT.MuzzleFlashEffect = "muzzleflash_suppressed"
 ENT.ZeroingTable = {}
-ENT.GunSoundFire = "emp/ags30/fire.wav"	-- Fire sound 
+ENT.GunSoundFire = "emp/m2/2.wav"	-- Fire sound 
 ENT.GunSoundReload = "emp/ags30/reload.wav" -- Reload sound 
 ENT.GunSoundDistant = "emp/ags30/distant.wav" -- Distant fire sound 
 ENT.Magazine = 48 -- Magazine capacity 
@@ -48,7 +47,7 @@ ENT.RotationSpeed = 15
 ENT.MaxRotation = 15
 ENT.MaxElevation = 15
 ENT.MaxDescension = 15
-
+------- SCOPE and CAMERA -------
 ENT.ManualReloadZoneMaxs = Vector(8,8,8) -- BBOX of manual reloading zone
 ENT.ManualReloadZoneMins = Vector(-8,-8,-8)
 ENT.ManualReloadZoneOffset = Vector(0,-32,8) -- Offset of BBOX
@@ -61,7 +60,11 @@ ENT.ManualEjectSound = ""
 ENT.HP = 1000 
 ENT.ManualReloadTime = 4 -- Delay in seconds before shell loaded in and ready
 
+ENT.ShouldBeMountable = true 
 
+ENT.ShouldFireBullets = false 
+
+ENT.CasingOffset = Vector(0,0,0)
 
 function ENT:Initialize()
 	if SERVER then
@@ -182,7 +185,11 @@ function ENT:Think()
         end 
 
         if Gunner:KeyDown(IN_ATTACK) then 
-        	self:ShootPewPews()
+        	if self.ShouldFireBullets == true then 
+        		self:ShootBulletsCustom()
+        	else 
+        		self:ShootPewPews()
+        	end
         end 
 
         if Gunner:KeyPressed(IN_ATTACK2) then 
@@ -199,12 +206,12 @@ function ENT:Think()
 	end 
 
 
+	debugoverlay.Cross( self.Gun:GetPos() + self.Gun:GetForward() * self.CasingOffset.X + self.Gun:GetRight() * self.CasingOffset.Y + self.Gun:GetUp() * self.CasingOffset.Z, 15, 0.2, Color( 0, 255, 255 ),false )
 
 
-	debugoverlay.BoxAngles( self.Gun:GetPos(), self.ManualReloadZoneMins, self.ManualReloadZoneMaxs, self.Gun:GetAngles(),0.1, Color( 255, 255, 255,0 ) )
+	--debugoverlay.BoxAngles( self.Gun:GetPos(), self.ManualReloadZoneMins, self.ManualReloadZoneMaxs, self.Gun:GetAngles(),0.1, Color( 255, 255, 255,0 ) )
 	debugoverlay.BoxAngles( self.Gun:GetPos() + self.Gun:GetForward() * self.ManualReloadZoneOffset.X + self.Gun:GetRight() * self.ManualReloadZoneOffset.Y + self.Gun:GetUp() * self.ManualReloadZoneOffset.Z, self.ManualReloadZoneMins, self.ManualReloadZoneMaxs, self.Gun:GetAngles(),0.1, Color( 255, 255, 255,0 ) )
-
-
+	debugoverlay.Cross( self.Gun:GetPos() + self.Gun:GetForward() * self.ProjectileOffset.X + self.Gun:GetRight() * self.ProjectileOffset.Y + self.Gun:GetUp() * self.ProjectileOffset.Z, 32, 0.1, Color( 255, 255, 255 ),false )
 
 	self:PostThink()
 
@@ -214,6 +221,9 @@ end
 
 function ENT:PostThink()
 
+end 
+
+function ENT:ShootBulletsCustom()
 end 
 
 function ENT:YawCorrection()
@@ -278,6 +288,7 @@ end
 
 
 function ENT:EnterGun(ent)
+
 	if not ent:IsPlayer() then return end 
 	local ply = ent 
 	ply:SetActiveWeapon(none) -- Give player empty hands
@@ -298,7 +309,10 @@ function ENT:OnTakeDamage( dmginfo )
 		self.HP = self.HP - dmginfo:GetDamage() 
 		if self.HP <= 0 then 
 		sound.Play( "spg9/penetration.wav", self:GetPos(), 120, math.random(90,110), 1 )
-		util.BlastDamage(self, self, self:GetPos(), 256, 256 )
+		local vPoint = self:GetPos()
+		local effectdata = EffectData()
+		effectdata:SetOrigin( vPoint )
+		util.Effect( "ManhackSparks", effectdata )
 		self:Remove() 
 	end 
 
@@ -318,7 +332,7 @@ function ENT:BuildGun()
 	local gun = ents.Create("prop_physics")
 	gun:SetModel(self.GunModel)
 	gun:SetPos(self:GetPos() + self:GetForward() * self.GunOffsetVec.X + self:GetRight() * self.GunOffsetVec.Y + self:GetUp() * self.GunOffsetVec.Z) 
-	gun:SetAngles(self:GetAngles() - self.GunOffsetAng - self.TripodOffsetAngle )
+	gun:SetAngles(self:GetAngles() + self.GunSpawnAngle - self.TripodOffsetAngle )
 	gun:Spawn()
 	gun:SetParent(self)
 	self.Gun = gun
@@ -438,6 +452,7 @@ function ENT:ShootPewPews()
 end
 
 function ENT:Use(activator,caller) 
+	if self.ShouldBeMountable == false then return end
 	if self.Gunner then 
 		if activator == self.Gunner then -- If gunner pressed E then exit gun
 			self:ExitGun(self.Gunner)

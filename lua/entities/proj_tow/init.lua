@@ -2,7 +2,7 @@ AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 include("shared.lua")
 
-ENT.Name = "SPG-9 Rocket HE"
+ENT.Name = "BGM TOW Projectile"
 ENT.Damage = 666
 ENT.Radius = 1024
 ENT.Mass = 120

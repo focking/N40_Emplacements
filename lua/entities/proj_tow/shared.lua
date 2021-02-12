@@ -1,5 +1,5 @@
 ENT.Type = "anim"
 ENT.Base = "proj_selfpropelled_based"
-ENT.PrintName = "SPG9 Projectile"
+ENT.PrintName = "BGM TOW Projectile"
 ENT.Author = "FockinPizza"
 ENT.Spawnable  = false 

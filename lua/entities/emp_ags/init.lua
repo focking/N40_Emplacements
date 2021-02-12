@@ -14,9 +14,12 @@ ENT.GunProjectile = "proj_30x29"
 ENT.TripodModel = "models/escape from tarkov/static/weapons/tripod.mdl"
 ENT.GunModel = "models/escape from tarkov/static/weapons/ags-30.mdl"
 ENT.GunOffsetVec = Vector(0,0,0)
+
+ENT.GunSpawnAngle = Angle(0,-90,0)
+
 ENT.GunOffsetAng = Angle(0,90,0)
 
-ENT.MatrixOffsetAngle = Angle(0,-90,0) -- Matrix rotation
+ENT.MatrixOffsetAngle = Angle(0,90,0) -- Matrix rotation
 ENT.TripodOffsetAngle = Angle(0,-90,0)
 
 ENT.GunCameraUp = 24
