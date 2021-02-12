@@ -5,9 +5,12 @@ Current weapon list:<br>
 - SPG-9<br>
 - AGS-30<br>
 - BGM TOW<br>
-- RPG-25 (Act3 Based)<br>
+- RPG-26 (ACT3)<br>
 
 Sounds: Squad, Ins2<br>
-BGM TOW Model by kali<br>
-Muzzleflashes by AyyKyu<br>
+BGM TOW Model: kali<br>
+Muzzleflashes: AyyKyu<br>
 SPG Model: Squad, texture work by GroveZ<br>
+Particles: NWI, Gredwitch
+
+This is personal project, not intendend for public release in Workshop or anywhere else.
