@@ -19,7 +19,7 @@ ENT.GunSpawnAngle = Angle(0,-90,0)
 
 ENT.GunOffsetAng = Angle(0,90,0)
 
-ENT.MatrixOffsetAngle = Angle(0,90,0) -- Matrix rotation
+ENT.MatrixOffsetAngle = Angle(0,-90,0) -- Matrix rotation
 ENT.TripodOffsetAngle = Angle(0,-90,0)
 
 ENT.GunCameraUp = 24

@@ -47,7 +47,7 @@ ENT.RotationSpeed = 15
 ENT.MaxRotation = 15
 ENT.MaxElevation = 10
 ENT.MaxDescension = 10
-
+ENT.HP = 200 
 ENT.SpawnOffset = Vector(0,0,230)
 function ENT:OnLastShot()
 	self.Gun:SetBodygroup(1,1)

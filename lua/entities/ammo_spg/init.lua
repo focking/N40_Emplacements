@@ -3,7 +3,7 @@ AddCSLuaFile("shared.lua")
 include("shared.lua")
 
 ENT.ProjectilePrintName = "SPG-9 HE"
-
+ENT.HP = 2
 
 function ENT:Initialize()
 		if SERVER then
@@ -17,6 +17,7 @@ function ENT:Initialize()
         self:SetUseType(SIMPLE_USE)
         self:DrawShadow( true )
         self:SetAngles(self:GetAngles()+Angle(180,0,-90))
+        self.HP = self.HP
         local phys = self:GetPhysicsObject()
         if phys:IsValid() then
             phys:Wake()
@@ -29,3 +30,4 @@ end
 function ENT:Use(activator,caller)
     activator:PickupObject( self )
 end
+

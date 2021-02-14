@@ -15,7 +15,7 @@ net.Receive( "n40_emp_enter_sight", function( len, pl )
 	--print(MaxZeroingIndex)
 	--print(AngleData["ZeroingTable"][1])
 end )
-
+PrintTable(scripted_ents.GetList().gb_thermite)
 
 net.Receive( "n40_emp_check_ammo", function( len, pl )
 	local ammo = net.ReadString()

@@ -24,9 +24,11 @@ function ENT:Initialize()
             phys:SetBuoyancyRatio(0)
             phys:SetMass(20)
         end
+        self.Detonation = false 
     end
 end
 
 function ENT:Use(activator,caller)
     activator:PickupObject( self )
 end
+

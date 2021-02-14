@@ -27,6 +27,9 @@ function ENT:Initialize()
     end
 end
 
+
+
+
 function ENT:Use(activator,caller)
     activator:PickupObject( self )
 end

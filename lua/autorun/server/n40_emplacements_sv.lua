@@ -38,48 +38,7 @@ concommand.Add("n40_emp_info", function( ply, cmd, args )
 	print("=============================")
 end)
 
-function TransferBones( base, ragdoll ) -- Transfers the bones of one entity to a ragdoll's physics bones (modified version of some of RobotBoy655's code)
-	if !IsValid( base ) or !IsValid( ragdoll ) then return end
-	for i = 0, ragdoll:GetPhysicsObjectCount() - 1 do
-		local bone = ragdoll:GetPhysicsObjectNum( i )
-		if ( IsValid( bone ) ) then
-			local pos, ang = base:GetBonePosition( ragdoll:TranslatePhysBoneToBone( i ) )
-			if ( pos ) then bone:SetPos( pos ) end
-			if ( ang ) then bone:SetAngles( ang ) end
-		end
-	end
-end
-
-concommand.Add("playtest", function( ply, cmd, args )
-	 ply:AnimRestartGesture( 6, ply:LookupSequence( "wos_l4d_die_standing" ) )
-end)
 
 
-hook.Add( 'PlayerDeath', 'DeathAnimation', function( victim, inflictor, attacker )
-		if IsValid( victim:GetRagdollEntity() ) then -- Remove the default ragdoll
-		victim:GetRagdollEntity():Remove()
-	end
-local animent = ents.Create( 'base_gmodentity' ) -- The entity used for the death animation
-	animent:SetModel(victim:GetModel())
-	animent:SetPos(victim:GetPos())
-	animent:Spawn()
-	animent:Activate()
-	animent:SetSequence( animent:LookupSequence( "wos_l4d_die_standing" ) )
-	animent:SetPlaybackRate( 1 )
-	animent.AutomaticFrameAdvance = true	
-		function animent:Think() -- This makes the animation work
-		self:NextThink( CurTime() )
-		return true
-	end
-	timer.Simple( animent:SequenceDuration( seq ), function() -- After the sequence is done, spawn the ragdoll
-		local rag = ents.Create( 'prop_ragdoll' )
-		rag:SetPos(animent:GetPos())
-		rag:SetModel(animent:GetModel())
-		animent:Remove()
-				rag:Spawn()
-		rag:Activate()
-				TransferBones( animent, rag )
 
 
-	end )
-end)

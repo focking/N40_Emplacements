@@ -19,7 +19,7 @@ ENT.GunSpawnAngle = Angle(0,180,0)
 ENT.TripodOffsetAngle = Angle(0,-90,0)
 ENT.ExitDistance = 1228 -- How far player can be from weapon
 ENT.GunRPM = 60 / 650 -- 60 Seconds / Actual RPM
-ENT.GunSoundFire = "emp/turret/fire.wav"	-- Fire sound 
+ENT.GunSoundFire = "emp/turret/tail.wav"	-- Fire sound 
 
 ENT.SpawnOffset = Vector(0,0,230)
 
@@ -27,9 +27,9 @@ ENT.ProjectileOffset = Vector(13,0,4)
 ENT.MuzzleFlashEffect = "muzzleflash_ak74"
 
 ENT.ShouldBeMountable = false
-ENT.LifeTime = 15
-ENT.HP = 256
-ENT.RotationSpeed = 100
+ENT.HP = 100
+ENT.RotationSpeed = 90
+ENT.ScanRange = 2048
 
 function ENT:OnFinishInit()
 	self:SetBodygroup(1, 1)
@@ -42,9 +42,15 @@ function ENT:OnGunBuild()
 	self.Thingy:SetModel("models/shd/shd_turret_thingy.mdl")
 	self.Thingy:SetParent(self)
 	self.Thingy:Spawn()	
-	self.InternalLifeTime = CurTime() + self.LifeTime
 end 
 
+function ENT:VisibleAngle(ent)
+    local directionAngCos = math.cos(math.pi / 16)
+	local aimVector = self:GetForward()*self.ScanRange
+	local entVector = ent:GetPos() - self:GetPos() 
+	local angCos = aimVector:Dot(entVector) / entVector:Length()
+	if angCos >= directionAngCos then return true else return false end
+end 
 
 function ENT:PostThink()
 
@@ -52,11 +58,10 @@ function ENT:PostThink()
 		self.Thingy:SetAngles(Angle(self:GetAngles().p,self.Gun:GetAngles().y,self:GetAngles().r))
 	end 
 
-	local a = ents.FindInSphere(self:GetPos(), 2048) 
+	local a = ents.FindInSphere(self:GetPos(), self.ScanRange) 
 
 	for k, v in pairs(a) do 
-		if v:IsNPC() then 
-			if v:Health() <= 0 then return end
+		if v:IsNPC() and v:Health() >= 1 then 
 
 			local target_angle = (v:GetPos() + v:OBBCenter() - self:GetPos()):Angle()
 
@@ -65,13 +70,15 @@ function ENT:PostThink()
 			local old_angle = self.Gun:GetAngles()
 
 
+
+
     		local newpitch = math.ApproachAngle( old_angle.p, target_angle.p, self.RotationSpeed * FrameTime() )
 			local newyaw = math.ApproachAngle( old_angle.y, target_angle.y, self.RotationSpeed * FrameTime() )
     		local newelev = math.ApproachAngle( old_angle.r, target_angle.r, self.RotationSpeed * FrameTime() )
 
    			self.Gun:SetAngles(Angle(math.ApproachAngle( old_angle.p, newpitch, self.RotationSpeed * FrameTime()),newyaw,math.ApproachAngle( old_angle.r, newelev, self.RotationSpeed * FrameTime() ) )) 
    			
-			if self.Gun:Visible(v) then 
+			if self.Gun:Visible(v) and self:VisibleAngle(v,self.Gun) then 
    				self:ShootBulletsCustom()
    			end
 
@@ -82,6 +89,16 @@ function ENT:PostThink()
 end 
 
 
+
+function ENT:VisibleAngle(ent,turret)
+    local directionAngCos = math.cos(20)
+	local aimVector = turret:GetForward()*self.ScanRange
+	local entVector = ent:GetPos() - turret:GetPos() 
+	local angCos = aimVector:Dot(entVector) / entVector:Length()
+	if angCos >= directionAngCos then return true else return false end
+end 
+
+
 function ENT:ShootBulletsCustom()
 
 	if self.NextFire <= CurTime() then 
@@ -89,13 +106,14 @@ function ENT:ShootBulletsCustom()
 		sound.Play( self.GunSoundFire, self:GetPos(), 120, math.random(90,110), 1 )
 		bullet = {}
 		bullet.Num=1
-		bullet.Src = self.Gun:GetPos()
+		bullet.Src = self.Gun:GetPos() + self.Gun:GetForward() * self.ProjectileOffset.X + self.Gun:GetRight() * self.ProjectileOffset.Y + self.Gun:GetUp() * self.ProjectileOffset.Z
 		bullet.Dir = self.Gun:GetAngles():Forward()
 		bullet.Spread=Vector(0.01,0.01,0)
 		bullet.TracerName = "tracer_green"	
 		bullet.Tracer = 4
 		bullet.Force= 1
 		bullet.Damage= 3
+		bullet.IgnoreEntity  = {self,self.Gun,self.Thingy}
 
 		local light = ents.Create("light_dynamic")
 		light:Spawn()
@@ -104,7 +122,7 @@ function ENT:ShootBulletsCustom()
 		light:SetKeyValue("brightness", 5)
 		light:SetKeyValue("_light", "255 192 64") 
 		light:Fire("TurnOn")
-		light:SetPos(self.Gun:GetPos())
+		light:SetPos(self.Gun:GetPos() + self.Gun:GetForward() * self.ProjectileOffset.X + self.Gun:GetRight() * self.ProjectileOffset.Y + self.Gun:GetUp() * self.ProjectileOffset.Z)
 	
 		timer.Simple(0.1,function() light:Remove() end)
 

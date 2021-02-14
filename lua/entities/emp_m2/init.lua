@@ -39,7 +39,7 @@ ENT.GunSoundReload = "emp/mk19/reload.wav" -- Reload sound
 ENT.GunSoundDistant = "emp/spg9/distant.wav" -- Distant fire sound 
 ENT.Magazine = 1 -- Magazine capacity 
 ENT.ReloadTime = 12 -- Reload time in seconds
-ENT.Health = 100 
+ENT.HP = 100 
 
 ENT.MuzzleFlashEffect = "muzzleflash_ak74"
 ENT.ManualReload = true  

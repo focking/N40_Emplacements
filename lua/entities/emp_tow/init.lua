@@ -16,7 +16,7 @@ ENT.GunModel = "models/kali/weapons/tow/parts/m220 tow launcher barrel.mdl"
 ENT.GunOffsetVec = Vector(0,0,34)
 
 ENT.GunOffsetAng = Angle(0,0,0) 
-ENT.GunSpawnAngle = Angle(0,0,0)
+ENT.GunSpawnAngle = Angle(0,-180,0)
 
 ENT.GunCameraUp = 0 --12 - 50m, 13 - 100m, 13.5 - 150m
 ENT.GunCameraForward = 3.4 
@@ -44,13 +44,13 @@ ENT.ManualInsertSound = "emp/spg9/load.wav"
 ENT.ManualEjectSound = "emp/spg9/unload.wav"
 ENT.DamageSimfphys = 5000
 ENT.RotationSpeed = 32
-ENT.MaxRotation = 180
+ENT.MaxRotation = 360
 ENT.MaxElevation = 180
 ENT.MaxDescension = 180
 ENT.ManualReloadTime = 1
 ENT.ScopeSensetivity = 0.1
 ENT.SpawnOffset = Vector(0,0,230)
-
+ENT.HP = 200 
 
 ENT.ManualReloadZoneMaxs = Vector(8,8,8) -- BBOX of manual reloading zone
 ENT.ManualReloadZoneMins = Vector(-8,-8,-8)
