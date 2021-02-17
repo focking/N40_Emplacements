@@ -115,6 +115,10 @@ function ENT:Burning()
     end 
 end 
 
+function ENT:Use(activator,caller)
+    activator:PickupObject( self )
+end
+
 
 
 

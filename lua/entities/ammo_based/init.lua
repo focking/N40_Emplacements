@@ -21,7 +21,7 @@ function ENT:Initialize()
         local phys = self:GetPhysicsObject()
         if phys:IsValid() then
             phys:Wake()
-            phys:SetBuoyancyRatio(0)
+           -- phys:SetBuoyancyRatio(0)
             phys:SetMass(20)
         end
         self.Detonation = false 

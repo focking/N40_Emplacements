@@ -79,6 +79,7 @@ function ENT:Initialize()
         local phys = self:GetPhysicsObject()
         if phys:IsValid() then
             phys:Wake()
+            phys:SetMass(500)
             phys:SetBuoyancyRatio(0)
         end
 
@@ -334,6 +335,7 @@ function ENT:BuildGun()
 	gun:SetPos(self:GetPos() + self:GetForward() * self.GunOffsetVec.X + self:GetRight() * self.GunOffsetVec.Y + self:GetUp() * self.GunOffsetVec.Z) 
 	gun:SetAngles(self:GetAngles() + self.GunSpawnAngle - self.TripodOffsetAngle )
 	gun:Spawn()
+	gun:SetSolid(SOLID_NONE)
 	gun:SetParent(self)
 	self.Gun = gun
 	self.Gun.OriginAngles = gun:GetLocalAngles() 

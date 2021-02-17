@@ -10,7 +10,6 @@ concommand.Add("n40_strip_weapons", function( ply, cmd, args )
 	end
 end)
 
-
 concommand.Add("n40_reset_env", function( ply, cmd, args )
 	if ply:IsSuperAdmin() then
 		local tbl = physenv.GetPerformanceSettings()
@@ -24,6 +23,7 @@ concommand.Add("n40_reset_env", function( ply, cmd, args )
 end)
 
 concommand.Add("n40_emp_info", function( ply, cmd, args )
+	
 	print("=============================")
 	print("Ver. 1202")
 	print("N40 Emplacements Warning!")
@@ -39,6 +39,32 @@ concommand.Add("n40_emp_info", function( ply, cmd, args )
 end)
 
 
+N40_EMP_VERSION = 1702
 
 
+---https://raw.githubusercontent.com/focking/N40_Emplacements/main/version
 
+local theReturnedHTML = "" -- Blankness
+
+http.Fetch( "https://raw.githubusercontent.com/focking/N40_Emplacements/main/version",
+	
+	function( body, length, headers, code )
+		theReturnedHTML = body
+		for s in string.gmatch(theReturnedHTML, "[^%s,]+") do
+   			if s == tostring(N40_EMP_VERSION) then 
+   				PrintMessage(HUD_PRINTTALK,"[n40 Emplacements] Is up to date, Current Version: ("..N40_EMP_VERSION..")")
+   			else 
+   				PrintMessage(HUD_PRINTTALK,"[n40 Emplacements] Update avaliable, https://github.com/focking/N40_Emplacements ")
+   				PrintMessage(HUD_PRINTTALK,"Current Version: "..N40_EMP_VERSION..", GitHub version "..s)
+   			end 
+		end
+	end,
+	function( message )
+		
+	end,
+
+	{ 
+		["accept-encoding"] = "gzip, deflate",
+		["accept-language"] = "fr" 
+	}
+)
