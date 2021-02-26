@@ -31,7 +31,7 @@ ENT.ZeroingTable = {[1] = {["Distance"] = 50, ["CamUp"] = 9.9},[2] = {["Distance
 ENT.ScopeSensetivity = 0.25
 ENT.MatrixOffsetAngle = Angle(0,-90,0) -- Matrix rotation
 ENT.ProjectileOffset = Vector(0,60,4) -- Projectile spawn offset 
-ENT.ExitDistance = 1228 -- How far player can be from weapon
+ENT.ExitDistance = 64 -- How far player can be from weapon
 ENT.GunRPM = 60 / 650 -- 60 Seconds / Actual RPM
 
 ENT.GunSoundFire = "emp/m2/sas.wav"	-- Fire sound 

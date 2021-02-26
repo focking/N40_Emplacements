@@ -68,7 +68,7 @@ ENT.CasingOffset = Vector(0,0,0)
 
 function ENT:Initialize()
 	if SERVER then
-
+		self:SetAutomaticFrameAdvance( true )
 		self:SetModel(self.TripodModel)
         self:SetMoveType( MOVETYPE_VPHYSICS )
         self:SetSolid( SOLID_VPHYSICS )
@@ -159,14 +159,18 @@ function ENT:Think()
 
 
        if Gunner:KeyPressed(IN_FORWARD) or Gunner:KeyPressed(IN_BACK) or Gunner:KeyPressed(IN_MOVELEFT) or Gunner:KeyPressed(IN_MOVERIGHT) then 
-       	self:ExitGun(Gunner)
+       		self:ExitGun(Gunner)
        end 
 
-
+        if Gunner:KeyReleased(IN_RELOAD) then 
+        	if self.IsCheckingAmmo == false and self.InspectionTime <= 22 then
+        		if self.ManualReload == true then self:UnloadShell() return end
+        		self:ReloadPewPews()
+        	end
+        	self.InspectionTime = 0
+        end 
         
        -- end 
-
-
 
         if Gunner:KeyDown(IN_RELOAD) then 
         	self.InspectionTime = self.InspectionTime + 1
@@ -177,13 +181,7 @@ function ENT:Think()
         	end 
         end 
 
-        if Gunner:KeyReleased(IN_RELOAD) then 
-        	if self.IsCheckingAmmo == false and self.InspectionTime <= 22 then
-        		if self.ManualReload == true then self:UnloadShell() return end
-        		self:ReloadPewPews()
-        	end
-        	self.InspectionTime = 0
-        end 
+
 
         if Gunner:KeyDown(IN_ATTACK) then 
         	if self.ShouldFireBullets == true then 

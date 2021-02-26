@@ -379,3 +379,29 @@ PrecacheParticleSystem("muzzleflash_shotgun_npc")
 PrecacheParticleSystem("muzzleflash_sniper_npc")
 PrecacheParticleSystem("muzzleflash_ar2_npc")
 PrecacheParticleSystem( "ExplosionCore_wall" )
+
+
+
+hook.Add("HUDPaint", "PIdoras", function()
+
+
+
+
+
+	local trace = LocalPlayer():GetEyeTrace()
+	local angles = LocalPlayer():EyeAngles()
+	local ourMat = Material( "models/wireframe" )
+	local hui = trace.StartPos+LocalPlayer():GetForward()*32
+	--print(angles)
+
+
+	cam.Start3D2D( LocalPlayer():GetPos() , Angle(0,0,0)  , 1 )
+		cam.IgnoreZ( true)
+
+		                draw.DrawText("Your Mother", "Default", 0, 0, Color(255, 255, 255, 255), TEXT_ALIGN_CENTER )
+--
+		cam.IgnoreZ(false)
+	cam.End3D2D()
+
+
+end )
