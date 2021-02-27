@@ -11,6 +11,6 @@ Sounds: Squad, Ins2<br>
 BGM TOW Model: kali<br>
 Muzzleflashes: AyyKyu<br>
 SPG Model: Squad, texture work by GroveZ<br>
-Particles: NWI, Gredwitch
+Particles: NWI, Gredwitch, AyyKyu<br>
 
 This is personal project, not intendend for public release in Workshop or anywhere else.
