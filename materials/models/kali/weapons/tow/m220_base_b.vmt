@@ -1,21 +1,23 @@
 "VertexlitGeneric"
 {
+	"$basetexture" 			"Models\Kali\Weapons\TOW\M220_Base_B_C"
+	"$bumpmap" 			"Models\Kali\Weapons\TOW\M220_Base_B_N"
+	"$phongexponenttexture" 		"Models\Kali\Weapons\TOW\M220_Base_B_Exp"
+	"$color2"                   		"[0.75 0.75 0.75]"
+//  	"$blendTintByBaseAlpha"     		"1"
 
-	"$basetexture" "Models\Kali\Weapons\TOW\M220_Base_B_C"
-	"$bumpmap" "Models\Kali\Weapons\TOW\M220_Base_B_N"
-	"$halflambert" "1"				
-	"$nocull" 1		
-
-	"$normalmapalphaenvmapmask" 1				
-	"$envmap" "env_cubemap"					
-	"$envmaptint" "[ .01 .01 .01 ]"					
-	"$envmapFresnel" "0.2"					
-
-	"$phong" "1"						
-	"$phongexponenttexture" "Models\Kali\Weapons\TOW\M220_Base_B_Exp"
-	"$phongboost" "0.4"						
-	"$phongfresnelranges"	"[ .2 1.2 8]"	
-
-	"$PhongAlbedoTint" "1"		
-
+    	"$envmap"                   		"env_cubemap"
+    	"$envmaptint"              		"[ .015 .015 .015 ]"
+ 
+   	"$phong"                    		"1"
+   	"$phongexponent"            		"5"
+   	"$phongboost"               		"50"
+   	"$phongfresnelranges"       		"[0.25 0.5 1]"
+    	"$phongalbedotint"          		"1"
+    	"$phongalbedoboost"         		"48"
+ 
+   	"$rimlight"                 		"1"
+   	"$rimlightexponent"         		"80"   
+   	"$rimlightboost"            		"1"
+   	"$rimmask"                 		"1"
 }

@@ -68,7 +68,6 @@ ENT.CasingOffset = Vector(0,0,0)
 
 function ENT:Initialize()
 	if SERVER then
-		self:SetAutomaticFrameAdvance( true )
 		self:SetModel(self.TripodModel)
         self:SetMoveType( MOVETYPE_VPHYSICS )
         self:SetSolid( SOLID_VPHYSICS )

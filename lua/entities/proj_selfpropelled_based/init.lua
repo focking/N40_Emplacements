@@ -73,6 +73,7 @@ function ENT:CreateLight()
     light:Fire("TurnOn")
     light:SetPos(self:GetPos())
     light:SetParent(self)
+    self.Light = light
   end
 end 
 
