@@ -22,6 +22,28 @@ concommand.Add("n40_reset_env", function( ply, cmd, args )
 	end
 end)
 
+function N40_TestMortar(ply)
+	local pos = ply:GetEyeTrace().HitPos
+	local tr = util.QuickTrace(pos, pos+Vector(0,0,999999))
+	if tr.HitSky then 
+		ply:ChatPrint("Target confirmed")
+		for i = 1, 10 do 
+			timer.Simple(2 + i,function()
+
+				local pos = tr.HitPos + Vector(VectorRand(-1024,1024),VectorRand(-1024,1024),0)
+				if not util.IsInWorld( pos ) then 
+					pos = tr.HitPos + Vector(VectorRand(-1024,1024),VectorRand(-1024,1024),0)
+				end
+				local a = ents.Create("proj_82mm")
+				a:SetPos(pos)
+				a:Spawn()
+			end)
+		end 
+	else 
+	ply:ChatPrint("Adjust coordinates")
+	end
+end 
+
 concommand.Add("n40_emp_info", function( ply, cmd, args )
 	
 	print("=============================")
@@ -39,7 +61,9 @@ concommand.Add("n40_emp_info", function( ply, cmd, args )
 end)
 
 
-N40_EMP_VERSION = 1702
+
+
+N40_EMP_VERSION = 2603
 
 
 ---https://raw.githubusercontent.com/focking/N40_Emplacements/main/version
@@ -68,3 +92,14 @@ http.Fetch( "https://raw.githubusercontent.com/focking/N40_Emplacements/main/ver
 		["accept-language"] = "fr" 
 	}
 )
+
+
+hook.Add( "PlayerTick", "N40_EMP_HANDLE_BUTONS", function(ply,mv)
+	--if ply:GetNWEntity("N40_EMP") then 
+	--	print("BRUUUH")
+	--end 
+end )
+
+hook.Add( "PlayerSpawn", "N40_EMP_HANDLE_NW", function(ply)
+	--ply:SetNWEntity("N40_EMP", nil)
+end )

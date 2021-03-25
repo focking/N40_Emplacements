@@ -6,7 +6,6 @@ concommand.Add("killyourself", function( ply, cmd, args )
 end)
 
 
-
 net.Receive( "n40_emp_enter_sight", function( len, pl )
 	if LocalPlayer().InEMPSights == true then return end
 	AngleData = net.ReadTable() 
@@ -301,7 +300,7 @@ surface.CreateFont( "N40_DisplayFont42", {
 	additive = false,
 	outline = false,
 } )
-
+game.AddParticles( "particles/ayykyu_tracers.pcf" )
 game.AddParticles( "particles/ammo_cache_ins.pcf" )
 game.AddParticles( "particles/doi_explosion_fx.pcf" )
 game.AddParticles( "particles/doi_explosion_fx_b.pcf" )
@@ -372,7 +371,8 @@ PrecacheParticleSystem("muzzleflash_vollmer")
 PrecacheParticleSystem("muzzleflash_hmg")
 PrecacheParticleSystem("muzzleflash_p90")
 PrecacheParticleSystem("muzzleflash_mpx")
-
+PrecacheParticleSystem("ayykyu_bullettracer")
+PrecacheParticleSystem("ayykyu_bullettracer_green")
 PrecacheParticleSystem("muzzleflash_pistol_npc")
 PrecacheParticleSystem("muzzleflash_smg_npc")
 PrecacheParticleSystem("muzzleflash_shotgun_npc")

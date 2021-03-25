@@ -41,9 +41,10 @@ function ENT:PhysicsCollide( data, phys )
 end
 
 function ENT:DoBabah()
+  if not IsValid(self.Owner) then owner = self else owner = self.Owner end
    util.Decal( self.Decal, self:GetPos(), self:GetPos() + self:GetForward() * 256 , self )
    ParticleEffect( self.Explosion, self:GetPos(), self:GetAngles() )
-     util.BlastDamage( self, self.Owner, self:GetPos(), self.Damage, self.Radius )
+     util.BlastDamage( self, owner, self:GetPos(), self.Damage, self.Radius )
 
    sound.Play( tostring(table.Random(self.ExplosionSounds)), self:GetPos(), 120, math.random(90,110), 1 )
    self:Remove()

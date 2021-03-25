@@ -8,7 +8,6 @@ ENT.NextFire = CurTime() -- Internal var, do not touch, used for shoot delay
 ENT.GunBuildFinish = false -- Internal bool, do not touch
 ENT.Gunner = nil -- Internal ent, do not touch, represents player 
 ENT.Gun = nil -- Internal ent, do not touch, represents turret 
-ENT.IsReloading = false -- Internal bool, do not touch
 ENT.NextScope = CurTime() -- Internal var, do not touch, used for scope delay
 ENT.InspectionTime = 0 -- Internal var, do not touch, used for scope delay
 ENT.IsCheckingAmmo = false -- Internal bool, do not touch
@@ -84,7 +83,7 @@ function ENT:Initialize()
 
 		self:BuildGun()
 		self:OnFinishInit()
-
+		self:SetNWBool("IsReloading",false)
     end 
     	self:SetPos(self:GetPos()+self.SpawnOffset)
 
@@ -161,24 +160,24 @@ function ENT:Think()
        		self:ExitGun(Gunner)
        end 
 
-        if Gunner:KeyReleased(IN_RELOAD) then 
-        	if self.IsCheckingAmmo == false and self.InspectionTime <= 22 then
+        if Gunner:KeyPressed(IN_RELOAD) then 
+        	--if self.IsCheckingAmmo == false and self.InspectionTime <= 22 then
         		if self.ManualReload == true then self:UnloadShell() return end
         		self:ReloadPewPews()
-        	end
-        	self.InspectionTime = 0
+        	--end
+        	--self.InspectionTime = 0
         end 
         
        -- end 
 
-        if Gunner:KeyDown(IN_RELOAD) then 
-        	self.InspectionTime = self.InspectionTime + 1
-        	if self.InspectionTime >= 45 then 
-        		self.NextFire = CurTime()
-        		self:CheckAmmo()
-        		self.InspectionTime = 0
-        	end 
-        end 
+    --   if Gunner:KeyDown(IN_RELOAD) then 
+    --   	self.InspectionTime = self.InspectionTime + 1
+    --   	if self.InspectionTime >= 45 then 
+    --   		self.NextFire = CurTime()
+    --   		self:CheckAmmo()
+    --   		self.InspectionTime = 0
+    --   	end 
+    --   end 
 
 
 
@@ -278,7 +277,6 @@ function ENT:ExitSight(ent)
 	net.Start("n40_emp_exit_sight")
 	net.Send(ent)
 	self.Gunner.IN_EMP_SIGHT = false 
-
 end
 
 
@@ -292,13 +290,14 @@ function ENT:EnterGun(ent)
 	ply:SetActiveWeapon(none) -- Give player empty hands
 	self:SetOwner(ply)
 	self.Gunner = ply
+	ply:SetNWEntity("N40_EMP",self)
 end 
 
 function ENT:ExitGun(ent)
 	self:ExitSight(ent)
+	self.Gunner:SetNWEntity("N40_EMP",nil)
 	self.Gunner = nil 
 	self:SetOwner(nil)
-
 	--self.Gun:SetAngles(self:GetAngles() + self.GunOffsetAng) -- Restore gun angles after exit
 end 
 
@@ -349,16 +348,19 @@ end
 
 
 function ENT:ReloadPewPews()
+
 	if self.ManualReload == true then return end 
-	if self.IsReloading then return end 
-	self.IsReloading = true 
+	if self:GetNWBool("IsReloading") == true then return end
+	self:SetNWBool("IsReloading",true) 
+
+--	if self.IsReloading then return end 
 	self.Mag = 0
 	self:EmitSound(self.GunSoundReload)
 	self:OnStartReload()
 	timer.Simple(self.ReloadTime,function()
         if not IsValid(self) then return end
 		self.Mag = self.Magazine
-		self.IsReloading = false 
+		self:SetNWBool("IsReloading",false) 
 		self:OnFinishReload()
 	end)	
 end 
@@ -381,8 +383,8 @@ function ENT:OnLoad()
 end
 
 function ENT:ReloadPewPewsManually(shell)
-	if self.IsReloading then return end 
-	self.IsReloading = true 
+	if self:GetNWBool("IsReloading") == true then return end
+	self:SetNWBool("IsReloading",true) 
 	self.Mag = 0
 	self:EmitSound(self.ManualInsertSound)
 	self.RoundInChamber = shell.ProjectileEnt
@@ -392,7 +394,7 @@ function ENT:ReloadPewPewsManually(shell)
 	timer.Simple(self.ManualReloadTime,function()
         if not IsValid(self) then return end
 		self.Mag = self.Magazine
-		self.IsReloading = false 
+		self:SetNWBool("IsReloading",false) 
 	end)
 end 
 
@@ -402,7 +404,7 @@ function ENT:ShootPewPews()
 
 	if self.ManualReload == true and not self.RoundInChamber then return end
 
-	if self.Mag <= 0 or self.IsReloading == true and not self.ManualReload then 
+	if self.Mag <= 0 or self:GetNWBool("IsReloading") == true and not self.ManualReload then 
 		--self:ReloadPewPews()
 	return end 
 
