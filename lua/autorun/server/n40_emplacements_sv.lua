@@ -101,5 +101,5 @@ hook.Add( "PlayerTick", "N40_EMP_HANDLE_BUTONS", function(ply,mv)
 end )
 
 hook.Add( "PlayerSpawn", "N40_EMP_HANDLE_NW", function(ply)
-	--ply:SetNWEntity("N40_EMP", nil)
+	ply:SetNWEntity("N40_EMP", nil)
 end )

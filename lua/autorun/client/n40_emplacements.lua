@@ -4,7 +4,18 @@ concommand.Add("killyourself", function( ply, cmd, args )
 	 ply:AnimRestartGesture( 6, "roll_AKIMBO",false )
 
 end)
+CreateMaterial( "sas", "VertexLitGeneric", {
+  ["$basetexture"] = "m2/US_M2_HMG_NORM",
+  ["$model"] = 1,
+  ["$translucent"] = 1,
+  ["$vertexalpha"] = 1,
+  ["$vertexcolor"] = 1
+} )
 
+net.Receive( "n40_global_distant", function( len, pl )
+	local ass = net.ReadString()
+	LocalPlayer():EmitSound( ass )
+end)
 
 net.Receive( "n40_emp_enter_sight", function( len, pl )
 	if LocalPlayer().InEMPSights == true then return end

@@ -2,12 +2,12 @@ AddCSLuaFile("cl_init.lua")
 AddCSLuaFile("shared.lua")
 include("shared.lua")
 
-ENT.ProjectilePrintName = "box_m2"
+ENT.ProjectilePrintName = ACT3_GetBulletID("50bmg_trg")
 
 
 function ENT:Initialize()
 		if SERVER then
-        self.ProjectileEnt = "box_m2"
+        self.ProjectileEnt = ACT3_GetBulletID("50bmg_trg")
         self.Capacity = 100
         self:SetNWString("Projectile",self.ProjectilePrintName)
 		self:SetModel("models/m2/rs2_m2_ammo.mdl")
@@ -34,7 +34,6 @@ function ENT:Initialize()
     end
 
 end
-
 
 
 ENT.CoockingOff = false 

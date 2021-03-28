@@ -284,13 +284,15 @@ end
 
 
 function ENT:EnterGun(ent)
-
 	if not ent:IsPlayer() then return end 
+	if IsValid(ent:GetNWEntity("N40_EMP")) then return end
 	local ply = ent 
+	print(ply:GetNWEntity("N40_EMP"))
 	ply:SetActiveWeapon(none) -- Give player empty hands
 	self:SetOwner(ply)
 	self.Gunner = ply
 	ply:SetNWEntity("N40_EMP",self)
+	print(ply:GetNWEntity("N40_EMP"))
 end 
 
 function ENT:ExitGun(ent)
