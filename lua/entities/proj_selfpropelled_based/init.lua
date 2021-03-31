@@ -26,7 +26,7 @@ ENT.TrailDelay = 0.15 --
 ENT.TrailDelayPassed = false 
 
 ENT.HasLoopSound = true
-ENT.Loop = "loop.wav"
+ENT.LoopSound = "loop.wav"
 
 ENT.Exploded = false 
 
@@ -160,8 +160,7 @@ end
 function ENT:WireGuide()
   if self.WireGuided == true and self.FuseTime >= CurTime() then 
 
-
-    if self.BaseEmp.Gunner then 
+    if self.BaseEmp.Gunner and self.BaseEmp then 
         local trace = self.BaseEmp.Gunner:GetEyeTrace().HitPos 
         local guide = (trace - self:GetPos()):Angle()
   
@@ -170,6 +169,13 @@ function ENT:WireGuide()
         local r = math.ApproachAngle(self:GetAngles().r, guide.r, 0.1)
 
         self:SetAngles(Angle(p,y,r))
+        local phys = self:GetPhysicsObject()
+        phys:AddVelocity(self:GetForward() * self.Mass/3 * self.Velocity/3 )
+    else 
+        local trace = self.BaseEmp.Gun:GetForward() * 20000
+        self.LastTrace = trace 
+        local guide = (trace - self:GetPos()):Angle()
+        self:SetAngles(guide)
         local phys = self:GetPhysicsObject()
         phys:AddVelocity(self:GetForward() * self.Mass/3 * self.Velocity/3 )
     end 

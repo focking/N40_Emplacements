@@ -65,6 +65,40 @@ ENT.ShouldFireBullets = false
 
 ENT.CasingOffset = Vector(0,0,0)
 
+
+
+
+
+ENT.ShouldDoBackBlast = false 
+ENT.BackblastPosition = Vector(0,0,0)
+ENT.BackblastRange = 0
+ENT.BackblastCone = 0
+
+function ENT:DoBackblast()
+	local position = self.Gun:GetPos() + self.Gun:GetForward() * self.BackblastPosition.X + self.Gun:GetRight() * self.BackblastPosition.Y + self.Gun:GetUp() * self.BackblastPosition.Z
+	ParticleEffect("door_explosion_core", position + self.Gun:GetForward()*32,  self.Gun:GetAngles() - Angle(0,180,0))
+	local size = self.BackblastRange
+	local dir = -self.Gun:GetRight()
+	local angle = math.cos( math.rad( self.BackblastCone ) ) -- 15 degrees
+	local startPos = position
+	local entities = ents.FindInCone( startPos, dir, size, angle )
+	for k, v in pairs(entities) do 
+		local tr = util.TraceLine( {
+			start = position,
+			endpos = v:GetPos(),
+			filter = {self,self.Gun}
+		} )
+		if tr.Entity == v then 
+			v:SetColor(Color(255, 0, 0, 255))
+			v:TakeDamage( 320, self.Gunner, self ) 
+			if v:GetClass() == "prop_physics" then 
+				local phys = v:GetPhysicsObject()
+				phys:ApplyForceCenter(self:GetPos() - tr.HitNormal * 9069 )
+			end 
+		end
+	end 
+end 
+
 function ENT:Initialize()
 	if SERVER then
 		self:SetModel(self.TripodModel)
@@ -85,6 +119,8 @@ function ENT:Initialize()
 		self:OnFinishInit()
 		self:SetNWBool("IsReloading",false)
     end 
+
+
     	self:SetPos(self:GetPos()+self.SpawnOffset)
 
     	self.ANGLE_TABLE = {
@@ -201,6 +237,23 @@ function ENT:Think()
 
 
 	end 
+------------------------------------
+
+	local position = self.Gun:GetPos() + self.Gun:GetForward() * self.BackblastPosition.X + self.Gun:GetRight() * self.BackblastPosition.Y + self.Gun:GetUp() * self.BackblastPosition.Z
+
+	local back_check = util.TraceLine( {
+		start = self.Gun:GetPos(),
+		endpos = position,
+		filter = {self,self.Gun}
+	})
+	local d = position:Distance(back_check.HitPos) 
+
+	debugoverlay.Cross( back_check.HitPos, 15, 0.2, Color( 0, 255, 0 ),false )
+	debugoverlay.Line( self.Gun:GetPos()  , back_check.HitPos, 0.1, Color( 255, 0, 0 ))
+	debugoverlay.Sphere(back_check.HitPos, self.BackblastRange + d, 0.1, Color( 255, 255, 255 ), false)
+
+-----------------------------
+
 
 
 	debugoverlay.Cross( self.Gun:GetPos() + self.Gun:GetForward() * self.CasingOffset.X + self.Gun:GetRight() * self.CasingOffset.Y + self.Gun:GetUp() * self.CasingOffset.Z, 15, 0.2, Color( 0, 255, 255 ),false )
@@ -430,7 +483,9 @@ function ENT:ShootPewPews()
         babah:SetPos(self.Gun:GetPos() + self.Gun:GetForward() * self.ProjectileOffset.X + self.Gun:GetRight() * self.ProjectileOffset.Y + self.Gun:GetUp() * self.ProjectileOffset.Z) -- Apply projectile offset 
         babah:Spawn()
        -- print(self:GetOwner())
-   
+      	if self.ShouldDoBackBlast == true then 
+   			self:DoBackblast()
+   		end
         babah:Fire("Use") -- Activate projectile
 		ParticleEffect(self.MuzzleFlashEffect, self.Gun:GetPos() + self.Gun:GetForward() * self.ProjectileOffset.X + self.Gun:GetRight() * self.ProjectileOffset.Y + self.Gun:GetUp() * self.ProjectileOffset.Z,  m:GetAngles())
 		self:OnShoot(m)

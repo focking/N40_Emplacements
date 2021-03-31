@@ -49,6 +49,66 @@ ENT.MaxElevation = 10
 ENT.MaxDescension = 10
 ENT.HP = 200 
 ENT.SpawnOffset = Vector(0,0,230)
+
+ENT.ShouldDoBackBlast = true 
+ENT.BackblastPosition = Vector(0,-200,8)
+ENT.BackblastRange = 128
+
+function ENT:DoBackblast()
+
+
+	local position = self.Gun:GetPos() + self.Gun:GetForward() * self.BackblastPosition.X + self.Gun:GetRight() * self.BackblastPosition.Y + self.Gun:GetUp() * self.BackblastPosition.Z
+	ParticleEffect("door_explosion_core", position,  self.Gun:GetAngles() - Angle(0,180,0))
+
+	local back_check = util.TraceLine( {
+		start = self.Gun:GetPos(),
+		endpos = position,
+		filter = {self,self.Gun}
+	})
+
+	local d = position:Distance(back_check.HitPos) 
+
+	local backblast_zone = ents.FindInSphere(back_check.HitPos, self.BackblastRange + d) 
+
+
+	if d >= 35 then 
+		--print("Overpressure!")
+					ParticleEffect("ep2_ExplosionCore", back_check.HitPos,  self.Gun:GetAngles() - Angle(0,180,0))
+			self:EmitSound("emp/impact/Overpressure.wav")
+	end 
+
+	for k,v in pairs(backblast_zone) do 
+		local tr = util.TraceLine({
+		start = self.Gun:GetPos(),
+		endpos = v:GetPos(),
+		filter = {self,self.Gun, self}
+		})	
+
+		if tr.Entity == v then 
+			--print(v:GetClass().." has been hit with blastwave")
+			local m = v:GetPos():Distance(back_check.HitPos) * 1.95 / 100 
+			if d <= 0 then d = 1 end
+			print(100 / m * d / 10)
+			v:TakeDamage(100/m*d/10, self.Gunner, self)
+			if v:GetClass() == "prop_physics" then 
+				local phys = v:GetPhysicsObject()
+				phys:ApplyForceCenter(self:GetPos() - tr.HitNormal * 9069 )
+			end 
+
+		end 
+
+	end 
+end 
+
+
+
+function ENT:DoBackblast2()
+
+
+end 
+
+
+
 function ENT:OnLastShot()
 	self.Gun:SetBodygroup(1,1)
 end 

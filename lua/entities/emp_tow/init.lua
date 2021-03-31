@@ -56,6 +56,58 @@ ENT.ManualReloadZoneMaxs = Vector(8,8,8) -- BBOX of manual reloading zone
 ENT.ManualReloadZoneMins = Vector(-8,-8,-8)
 ENT.ManualReloadZoneOffset = Vector(-10,0,0)
 
+
+ENT.ShouldDoBackBlast = true 
+
+ENT.ShouldDoBackBlast = true 
+ENT.BackblastPosition = Vector(-200,0,8)
+ENT.BackblastRange = 128
+
+function ENT:DoBackblast()
+
+
+	local position = self.Gun:GetPos() + self.Gun:GetForward() * self.BackblastPosition.X + self.Gun:GetRight() * self.BackblastPosition.Y + self.Gun:GetUp() * self.BackblastPosition.Z
+	ParticleEffect("door_explosion_core", position,  self.Gun:GetAngles() - Angle(0,180,0))
+	local back_check = util.TraceLine( {
+		start = self.Gun:GetPos() - self.Gun:GetForward()* 32,
+		endpos = position,
+		filter = {self,self.Gun,self.AmmoTube,self.Thingy, "proj_tow"}
+	})
+
+	local d = position:Distance(back_check.HitPos) 
+
+	local backblast_zone = ents.FindInSphere(back_check.HitPos, self.BackblastRange + d) 
+
+
+	if d >= 35 then 
+		--print("Overpressure!")
+			ParticleEffect("ep2_ExplosionCore", position,  self.Gun:GetAngles() - Angle(0,180,0))
+			self:EmitSound("impact/Overpressure.wav")
+	end 
+
+	for k,v in pairs(backblast_zone) do 
+		local tr = util.TraceLine({
+		start = self.Gun:GetPos()- self.Gun:GetForward() * 32,
+		endpos = v:GetPos(),
+		filter = {self,self.Gun,self.AmmoTube,self.Thingy}
+		})	
+
+		if tr.Entity == v then 
+			--print(v:GetClass().." has been hit with blastwave")
+			local m = v:GetPos():Distance(back_check.HitPos) * 1.95 / 100 
+			if d <= 0 then d = 1 end
+			v:TakeDamage(100/m*d/10, self.Gunner, self)
+			if v:GetClass() == "prop_physics" then 
+				local phys = v:GetPhysicsObject()
+				phys:ApplyForceCenter(self:GetPos() - tr.HitNormal * 9069 )
+			end 
+
+		end 
+
+	end 
+end 
+
+
 function ENT:OnLastShot()
 	self.AmmoTube:SetBodygroup(1,1)	
 end 

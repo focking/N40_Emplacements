@@ -25,7 +25,9 @@ function ENT:DoBabah(bruh)
 end
 
 function ENT:PostPostInit()
-	timer.Simple(0.2,function()
-		self:SetBodygroup(1,1)
+	timer.Simple(0.2,function(self)
+		if IsValid(self) then 
+			self:SetBodygroup(1,1)
+		end
 	end)
 end  

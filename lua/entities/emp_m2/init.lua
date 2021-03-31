@@ -137,7 +137,7 @@ function ENT:PostThink()
 				self.Gun.Smoke:SetModelScale(0)
 				self.HeatEffect = true 
 				ParticleEffectAttach("smoke_gib_01",PATTACH_ABSORIGIN,self.Gun.Smoke,1)
-				timer.Simple(5,function() self.Gun.Smoke:Remove() self.HeatEffect = false end)
+				timer.Simple(5,function() if IsValid(self) then self.Gun.Smoke:Remove() self.HeatEffect = false end end)
 			end
 		end 
 
